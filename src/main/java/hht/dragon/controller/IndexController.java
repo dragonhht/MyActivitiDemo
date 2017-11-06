@@ -2,6 +2,8 @@ package hht.dragon.controller;
 
 import hht.dragon.activiti.FlowProcessService;
 import hht.dragon.activiti.model.BusinessKeyModel;
+import hht.dragon.entity.LeaveBill;
+import hht.dragon.utils.HibernateUtils;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,8 @@ public class IndexController {
 
     @Autowired
     private FlowProcessService flowProcessService;
+    @Autowired
+    private HibernateUtils hibernateUtils;
 
     @RequestMapping("/index")
     public String index(HttpSession session) {
@@ -59,6 +63,12 @@ public class IndexController {
     @RequestMapping("/businesskey")
     public BusinessKeyModel businessKey(String taskId) {
         return flowProcessService.getBusinessKey(taskId);
+    }
+
+    @RequestMapping("/get")
+    public Object get() {
+        LeaveBill o = (LeaveBill) hibernateUtils.getOne("LeaveBill", "id", "333");
+        return o;
     }
 
 

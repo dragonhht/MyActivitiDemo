@@ -42,6 +42,36 @@ public interface FlowProcessService {
     List<Task> getPersonTasks(String id);
 
     /**
+     * 查询个人组任务中的任务
+     * @param id 用户ID
+     * @return 组任务
+     */
+    List<Task> getCandidateUserTasks(String id);
+
+    /**
+     * 拾取组任务任务.
+     * @param taskId 任务ID
+     * @param id 用户ID
+     */
+    void pickupTask(String taskId, String id);
+
+    /**
+     * 向组任务中添加成员.
+     * @param taskId 任务ID
+     * @param id 用户ID
+     */
+    void addForCandidateUser(String taskId, String id);
+
+    void addForCandidateUser(String taskId, List<String> ids) throws Exception;
+
+    /**
+     * 将用户从组任务候选人中删除.
+     * @param taskId 组任务ID
+     * @param id 用户ID
+     */
+    void delFroCandidateUser(String taskId, String id);
+
+    /**
      * 通过任务ID获取businessKey.
      * @param taskId 任务编号
      * @return businessKey

@@ -1,6 +1,8 @@
 package hht.dragon.activiti;
 
+import hht.dragon.activiti.execption.CandidateUserEmptyException;
 import hht.dragon.activiti.model.BusinessKeyModel;
+import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -20,6 +22,7 @@ import java.util.zip.ZipInputStream;
  * Date: 17-11-5
  */
 @Service
+@Slf4j
 public class FlowProcessServiceImpl implements FlowProcessService {
 
     @Autowired
@@ -69,8 +72,44 @@ public class FlowProcessServiceImpl implements FlowProcessService {
     public List<Task> getPersonTasks(String id) {
         List<Task> tasks = taskService.createTaskQuery()
                 .taskAssignee(id)
+                .orderByTaskCreateTime().desc()
                 .list();
         return tasks;
+    }
+
+    @Override
+    public List<Task> getCandidateUserTasks(String id) {
+        List<Task> tasks = taskService.createTaskQuery()
+                .taskCandidateUser(id)
+                .orderByTaskCreateTime().desc()
+                .list();
+        return tasks;
+    }
+
+    @Override
+    public void pickupTask(String taskId, String id) {
+        taskService.claim(taskId, id);
+    }
+
+    @Override
+    public void addForCandidateUser(String taskId, String id) {
+        taskService.addCandidateUser(taskId, id);
+    }
+
+    @Override
+    public void addForCandidateUser(String taskId, List<String> ids) {
+        if (ids != null && ids.size() > 0) {
+            for (String id : ids) {
+                taskService.addCandidateUser(taskId, id);
+            }
+            return;
+        }
+        throw new CandidateUserEmptyException();
+    }
+
+    @Override
+    public void delFroCandidateUser(String taskId, String id) {
+        taskService.deleteCandidateUser(taskId, id);
     }
 
     @Override

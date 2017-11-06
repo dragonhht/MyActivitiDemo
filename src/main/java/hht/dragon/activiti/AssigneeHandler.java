@@ -1,6 +1,5 @@
 package hht.dragon.activiti;
 
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.delegate.DelegateTask;
 import org.activiti.engine.delegate.TaskListener;
@@ -22,8 +21,8 @@ public class AssigneeHandler implements TaskListener{
     public void notify(DelegateTask delegateTask) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         HttpSession session = request.getSession();
-        String name = (String) session.getAttribute("user");
-        log.info(name);
-        delegateTask.setAssignee(name);
+        String id = (String) session.getAttribute("user");
+        log.info(id);
+        delegateTask.setAssignee(id);
     }
 }
