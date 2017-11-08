@@ -1,5 +1,6 @@
 package hht.dragon.activiti;
 
+import hht.dragon.activiti.common.Variable;
 import hht.dragon.activiti.execption.CandidateUserEmptyException;
 import hht.dragon.activiti.model.BusinessKeyModel;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
@@ -51,20 +53,77 @@ public class FlowProcessServiceImpl implements FlowProcessService {
     }
 
     @Override
-    public void startProcess(String key) {
-        runtimeService.startProcessInstanceByKey(key);
+    public void deploy(String bpmnName, String name) {
+        repositoryService.createDeployment()
+                .name(name)
+                .addClasspathResource(bpmnName)
+                .deploy();
     }
 
     @Override
-    public void startProcess(String key, String businessKey) {
-        businessKey = key + "." + businessKey;
-        runtimeService.startProcessInstanceByKey(key, businessKey);
+    public ProcessInstance startProcess(String key) {
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(key);
+        return processInstance;
     }
 
     @Override
-    public void startProcess(String key, String businessKey, Map<String, Object> variable) {
+    public ProcessInstance startProcess(String key, String businessKey) {
         businessKey = key + "." + businessKey;
-        runtimeService.startProcessInstanceByKey(key, businessKey, variable);
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(key, businessKey);
+        return processInstance;
+    }
+
+    @Override
+    public ProcessInstance startProcess(String key, String businessKey, Map<String, Object> variable) {
+        businessKey = key + "." + businessKey;
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(key, businessKey, variable);
+        return processInstance;
+    }
+
+    @Override
+    public void startProcessAndSubmit(String key, String id) {
+        ProcessInstance processInstance = startProcess(key);
+        Task task = getTask(processInstance.getProcessDefinitionId(), processInstance.getProcessInstanceId());
+        String taskId = task.getId();
+        setAssignee(taskId, id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("previous", id);
+        complete(taskId, map);
+    }
+
+    private Task getTask(String processDefinitionId, String processInstanceId) {
+        Task task = taskService.createTaskQuery()
+                .processDefinitionId(processDefinitionId)
+                .processInstanceId(processInstanceId)
+                .singleResult();
+        return task;
+    }
+
+    @Override
+    public void startProcessAndSubmit(String key, String businessKey, String id) {
+        ProcessInstance processInstance = startProcess(key, businessKey);
+        Task task = getTask(processInstance.getProcessDefinitionId(), processInstance.getProcessInstanceId());
+        String taskId = task.getId();
+        setAssignee(taskId, id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("previous", id);
+        complete(taskId, map);
+    }
+
+    @Override
+    public void startProcessAndSubmit(String key, String businessKey, Map<String, Object> variable, String id) {
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(key, businessKey, variable);
+        Task task = getTask(processInstance.getProcessDefinitionId(), processInstance.getProcessInstanceId());
+        String taskId = task.getId();
+        setAssignee(taskId, id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("previous", id);
+        complete(taskId);
+    }
+
+    @Override
+    public void setAssignee(String taskId, String id) {
+        taskService.setAssignee(taskId, id);
     }
 
 
@@ -114,10 +173,7 @@ public class FlowProcessServiceImpl implements FlowProcessService {
 
     @Override
     public BusinessKeyModel getBusinessKey(String taskId) {
-        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-        String processInstanceId = task.getProcessInstanceId();
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-                .processInstanceId(processInstanceId).singleResult();
+        ProcessInstance processInstance = getProcessInstanceByTeskId(taskId);
         String businessKey = processInstance.getBusinessKey();
         String[] s = businessKey.split("\\.");
         if (s != null && s.length >1) {
@@ -128,12 +184,40 @@ public class FlowProcessServiceImpl implements FlowProcessService {
     }
 
     @Override
-    public void compele(String taskId, Map<String, Object> variable) {
+    public void complete(String taskId, Map<String, Object> variable) {
         taskService.complete(taskId, variable);
     }
 
     @Override
-    public boolean isCompeled(String processInstanceId) {
+    public void complete(String taskId) {
+        taskService.complete(taskId);
+    }
+
+    @Override
+    public void complete(String taskId, String pass) {
+        ProcessInstance processInstance = getProcessInstanceByTeskId(taskId);
+        String previous = getPrevious(taskId);
+        Map<String, Object> map = new HashMap<>();
+        map.put("pass", pass);
+        if (Variable.PASS_FALSE.equals(pass)) {
+            complete(taskId, map);
+            Task task = getTask(processInstance.getProcessDefinitionId(), processInstance.getProcessInstanceId());
+            taskService.setAssignee(task.getId(), previous);
+        }
+        if (Variable.PASS_TRUE.equals(pass)) {
+            boolean ok = isCompleted(processInstance.getProcessInstanceId());
+            String assignee = null;
+            if (!ok) {
+                Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+                assignee = task.getAssignee();
+            }
+            map.put("previous", assignee);
+            complete(taskId, map);
+        }
+    }
+
+    @Override
+    public boolean isCompleted(String processInstanceId) {
         boolean ok = true;
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
                 .processInstanceId(processInstanceId)
@@ -142,5 +226,23 @@ public class FlowProcessServiceImpl implements FlowProcessService {
             ok = false;
         }
         return ok;
+    }
+
+    @Override
+    public String getVariable(String taskId, String key) {
+        return taskService.getVariable(taskId, key, String.class);
+    }
+
+    @Override
+    public ProcessInstance getProcessInstanceByTeskId(String taskId) {
+        Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        String processInstanceId = task.getProcessInstanceId();
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(processInstanceId).singleResult();
+        return processInstance;
+    }
+
+    private String getPrevious(String taskId) {
+        return taskService.getVariable(taskId, "previous", String.class);
     }
 }

@@ -1,6 +1,7 @@
 package hht.dragon.activiti;
 
 import hht.dragon.activiti.model.BusinessKeyModel;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -24,15 +25,35 @@ public interface FlowProcessService {
 
     void deploy(String bpmnName, String pngName, String name);
 
+    void deploy(String bpmnName, String name);
+
     /**
      * 启动流程实例.
      * @param key 流程键
      */
-    void startProcess(String key);
+    ProcessInstance startProcess(String key);
 
-    void startProcess(String key, String businessKey);
+    ProcessInstance startProcess(String key, String businessKey);
 
-    void startProcess(String key, String businessKey, Map<String, Object> variable);
+    ProcessInstance startProcess(String key, String businessKey, Map<String, Object> variable);
+
+    /**
+     * 启动流程实例并提交流程.
+     * @param key 流程键
+     * @param id 提交用户ID
+     */
+    void startProcessAndSubmit(String key, String id);
+
+    void startProcessAndSubmit(String key, String businessKey, String id);
+
+    void startProcessAndSubmit(String key, String businessKey, Map<String, Object> variable, String id);
+
+    /**
+     * 设置任务操作者.
+     * @param taskId 任务ID
+     * @param id 用户ID
+     */
+    void setAssignee(String taskId, String id);
 
     /**
      * 查询个人业务.
@@ -83,13 +104,32 @@ public interface FlowProcessService {
      * @param taskId 任务ID
      * @param variable 参数
      */
-    void compele(String taskId, Map<String, Object> variable);
+    void complete(String taskId, Map<String, Object> variable);
+
+    void complete(String taskId);
+
+    void complete(String taskId, String pass);
 
     /**
      * 是否已经完成流程.
      * @param processInstanceId 流程实例ID
      * @return true为流程已经完成，否则为未完成
      */
-    boolean isCompeled(String processInstanceId);
+    boolean isCompleted(String processInstanceId);
+
+    /**
+     * 获取任务中的字符串型变量.
+     * @param taskId 任务ID
+     * @param key 变量键
+     * @return 变量值
+     */
+    String getVariable(String taskId, String key);
+
+    /**
+     * 通过任务ID获取流程实例.
+     * @param taskId 任务ID
+     * @return 流程实例
+     */
+    ProcessInstance getProcessInstanceByTeskId(String taskId);
 
 }

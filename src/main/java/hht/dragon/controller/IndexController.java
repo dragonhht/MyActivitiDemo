@@ -51,13 +51,13 @@ public class IndexController {
     public String compele(String id) {
         Map<String, Object> map = new HashMap<>();
         map.put("outcome", "批准");
-        flowProcessService.compele(id, map);
+        flowProcessService.complete(id, map);
         return "ok";
     }
 
     @RequestMapping("/ok")
     public boolean ok(String id) {
-        return flowProcessService.isCompeled(id);
+        return flowProcessService.isCompleted(id);
     }
 
     @RequestMapping("/businesskey")
@@ -71,5 +71,47 @@ public class IndexController {
         return o;
     }
 
+    @RequestMapping("/deploy")
+    public String deploy() {
+        flowProcessService.deploy("processes/UpdateOrDelTest.bpmn", "UpdateOrDelTest");
+        return "ok";
+    }
+
+    @RequestMapping("/startupdate")
+    public String startUpdate(HttpSession session) {
+        session.setAttribute("user", "hht");
+        flowProcessService.startProcess("UpdateOrDel");
+        return "ok";
+    }
+
+    @RequestMapping("/startDel")
+    public String startDel() {
+        flowProcessService.startProcessAndSubmit("UpdateOrDel", "第三次");
+        return "ok";
+    }
+
+    @RequestMapping("/complete1")
+    public String complete1(String taskId) {
+        flowProcessService.complete(taskId);
+        return "ok";
+    }
+
+    @RequestMapping("/complete")
+    public String complete(String taskId, String pass) {
+       flowProcessService.complete(taskId, pass);
+        return "ok";
+    }
+
+    @RequestMapping("/setAssignee")
+    public String setAssignee(String taskId, String id, HttpSession session) {
+        session.setAttribute("user", "qwe");
+        flowProcessService.setAssignee(taskId, id);
+        return "ok";
+    }
+
+    @RequestMapping("/getValue")
+    public String getValue(String taskId, String key) {
+        return flowProcessService.getVariable(taskId, key);
+    }
 
 }

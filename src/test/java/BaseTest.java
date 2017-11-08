@@ -37,4 +37,5 @@ public class BaseTest {
         List<String> ids = new ArrayList<>();
         flowProcessService.addForCandidateUser("123", ids);
     }
+
 }
