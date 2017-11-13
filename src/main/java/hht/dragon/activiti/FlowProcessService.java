@@ -90,7 +90,7 @@ public interface FlowProcessService {
      * @param taskId 组任务ID
      * @param id 用户ID
      */
-    void delFroCandidateUser(String taskId, String id);
+    void delForCandidateUser(String taskId, String id);
 
     /**
      * 通过任务ID获取businessKey.

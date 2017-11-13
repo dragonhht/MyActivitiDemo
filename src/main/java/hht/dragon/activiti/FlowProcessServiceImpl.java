@@ -4,6 +4,7 @@ import hht.dragon.activiti.common.Variable;
 import hht.dragon.activiti.execption.CandidateUserEmptyException;
 import hht.dragon.activiti.model.BusinessKeyModel;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -87,7 +88,10 @@ public class FlowProcessServiceImpl implements FlowProcessService {
         String taskId = task.getId();
         setAssignee(taskId, id);
         Map<String, Object> map = new HashMap<>();
-        map.put("previous", id);
+        int index = 0;
+        map.put("index", index + 1);
+        map.put("size", index + 1);
+        map.put("" + index, id);
         complete(taskId, map);
     }
 
@@ -106,7 +110,10 @@ public class FlowProcessServiceImpl implements FlowProcessService {
         String taskId = task.getId();
         setAssignee(taskId, id);
         Map<String, Object> map = new HashMap<>();
-        map.put("previous", id);
+        int index = 0;
+        map.put("index", index + 1);
+        map.put("size", index + 1);
+        map.put("" + index, id);
         complete(taskId, map);
     }
 
@@ -117,7 +124,10 @@ public class FlowProcessServiceImpl implements FlowProcessService {
         String taskId = task.getId();
         setAssignee(taskId, id);
         Map<String, Object> map = new HashMap<>();
-        map.put("previous", id);
+        int index = 0;
+        map.put("index", index + 1);
+        map.put("size", index + 1);
+        map.put("" + index, id);
         complete(taskId);
     }
 
@@ -167,7 +177,7 @@ public class FlowProcessServiceImpl implements FlowProcessService {
     }
 
     @Override
-    public void delFroCandidateUser(String taskId, String id) {
+    public void delForCandidateUser(String taskId, String id) {
         taskService.deleteCandidateUser(taskId, id);
     }
 
@@ -196,10 +206,23 @@ public class FlowProcessServiceImpl implements FlowProcessService {
     @Override
     public void complete(String taskId, String pass) {
         ProcessInstance processInstance = getProcessInstanceByTeskId(taskId);
-        String previous = getPrevious(taskId);
+        int index = getIndex(taskId);
         Map<String, Object> map = new HashMap<>();
         map.put("pass", pass);
+        boolean reject = isReject(taskId);
         if (Variable.PASS_FALSE.equals(pass)) {
+            String previous = getVariable(taskId, "" + (index - 1));
+            int size = getSize(taskId);
+            if (index >= size) {
+                Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+                String assignee = task.getAssignee();
+                if (!reject) {
+                    map.put("size", ++size);
+                    map.put("" + index, assignee);
+                }
+            }
+            map.put("reject", true);
+            map.put("index", index-1);
             complete(taskId, map);
             Task task = getTask(processInstance.getProcessDefinitionId(), processInstance.getProcessInstanceId());
             taskService.setAssignee(task.getId(), previous);
@@ -207,12 +230,31 @@ public class FlowProcessServiceImpl implements FlowProcessService {
         if (Variable.PASS_TRUE.equals(pass)) {
             boolean ok = isCompleted(processInstance.getProcessInstanceId());
             String assignee = null;
+            int size = getSize(taskId);
+            index++;
             if (!ok) {
-                Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-                assignee = task.getAssignee();
+                if (index >= size) {
+                    Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+                    assignee = task.getAssignee();
+                    if (!reject) {
+                        size++;
+                        map.put("size" , size);
+                        map.put("index", index);
+                        map.put("" + index, assignee);
+                    } else {
+                        map.put("reject", false);
+                    }
+                    complete(taskId, map);
+                } else {
+                    String next = getVariable(taskId, "" + index);
+                    map.put("index", index);
+                    complete(taskId, map);
+                    if (!isCompleted(processInstance.getProcessInstanceId())) {
+                        Task task = getTask(processInstance.getProcessDefinitionId(), processInstance.getProcessInstanceId());
+                        taskService.setAssignee(task.getId(), next);
+                    }
+                }
             }
-            map.put("previous", assignee);
-            complete(taskId, map);
         }
     }
 
@@ -242,7 +284,21 @@ public class FlowProcessServiceImpl implements FlowProcessService {
         return processInstance;
     }
 
-    private String getPrevious(String taskId) {
-        return taskService.getVariable(taskId, "previous", String.class);
+    private Integer getIndex(String taskId) {
+        return taskService.getVariable(taskId, "index", Integer.class);
     }
+
+    private Integer getSize(String taskId) {
+        return taskService.getVariable(taskId, "size", Integer.class);
+    }
+
+    private boolean isReject(String taskId) {
+        Object object = taskService.getVariable(taskId, "reject");
+        boolean reject = false;
+        if (object != null) {
+            reject = (boolean) object;
+        }
+        return reject;
+    }
+
 }
