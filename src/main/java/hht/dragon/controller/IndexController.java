@@ -7,6 +7,7 @@ import hht.dragon.utils.HibernateUtils;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -112,6 +113,24 @@ public class IndexController {
     @RequestMapping("/getValue")
     public String getValue(String taskId, String key) {
         return flowProcessService.getVariable(taskId, key);
+    }
+
+    @RequestMapping("/deployTest")
+    public String deployTest() {
+        flowProcessService.deploy("processes/users.bpmn", "users");
+        flowProcessService.startProcess("myProcess_1");
+        return "ok";
+    }
+
+    @RequestMapping("/getUserTasks")
+    @ResponseBody
+    public String getUserTasks(String id) {
+        List<Task> tasks = flowProcessService.getCandidateUserTasks(id);
+        String s = "";
+        for (Task task : tasks) {
+            s = s + task.getId() + " : " + task.getName() + " ,";
+        }
+        return s;
     }
 
 }
