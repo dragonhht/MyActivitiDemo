@@ -1,9 +1,11 @@
 package hht.dragon.controller;
 
 import hht.dragon.activiti.FlowProcessService;
+import hht.dragon.activiti.FlowProcessServiceImpl;
 import hht.dragon.activiti.model.BusinessKeyModel;
 import hht.dragon.entity.LeaveBill;
 import hht.dragon.utils.HibernateUtils;
+import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +29,8 @@ public class IndexController {
     private FlowProcessService flowProcessService;
     @Autowired
     private HibernateUtils hibernateUtils;
+    @Autowired
+    private FlowProcessServiceImpl service;
 
     @RequestMapping("/index")
     public String index(HttpSession session) {
@@ -131,6 +135,18 @@ public class IndexController {
             s = s + task.getId() + " : " + task.getName() + " ,";
         }
         return s;
+    }
+
+    @RequestMapping("/comment")
+    @ResponseBody
+    public Comment comment(String taskId, String id, String message) {
+        return service.addComment(taskId, id, message);
+    }
+
+    @RequestMapping("/comments")
+    @ResponseBody
+    public List<Comment> getComments(String taskId) {
+        return service.getComments(taskId);
     }
 
 }

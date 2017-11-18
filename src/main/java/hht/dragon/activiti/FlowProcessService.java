@@ -108,7 +108,7 @@ public interface FlowProcessService {
 
     void complete(String taskId);
 
-    void complete(String taskId, String pass);
+//    void complete(String taskId, String pass);
 
     /**
      * 是否已经完成流程.

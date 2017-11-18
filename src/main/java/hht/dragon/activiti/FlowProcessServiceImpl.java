@@ -8,7 +8,9 @@ import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,8 @@ public class FlowProcessServiceImpl implements FlowProcessService {
     private TaskService taskService;
     @Autowired
     private RuntimeService runtimeService;
+    @Autowired
+    private HistoryService historyService;
 
     @Override
     public void deploy(MultipartFile file, String name) throws IOException {
@@ -196,14 +200,35 @@ public class FlowProcessServiceImpl implements FlowProcessService {
     @Override
     public void complete(String taskId, Map<String, Object> variable) {
         taskService.complete(taskId, variable);
+        autoSetNowTaskAssignee(taskId);
     }
 
     @Override
     public void complete(String taskId) {
         taskService.complete(taskId);
+        autoSetNowTaskAssignee(taskId);
     }
 
-    @Override
+    private void autoSetNowTaskAssignee(String taskId) {
+        ProcessInstance processInstance = getProcessInstanceByTeskId(taskId);
+        String processDefinitionId = processInstance.getProcessDefinitionId();
+        String processInstanceId = processInstance.getProcessInstanceId();
+        Task task = getTask(processDefinitionId, processInstanceId);
+        List<HistoricTaskInstance> tasks = historyService.createHistoricTaskInstanceQuery()
+                .processDefinitionId(processDefinitionId)
+                .processInstanceId(processInstanceId)
+                .taskName(task.getName())
+                .orderByHistoricTaskInstanceStartTime().desc()
+                .list();
+        if (tasks != null) {
+            String assign = tasks.get(0).getAssignee();
+            taskService.setAssignee(task.getId(), assign);
+        }
+    }
+
+
+
+    /*@Override
     public void complete(String taskId, String pass) {
         ProcessInstance processInstance = getProcessInstanceByTeskId(taskId);
         int index = getIndex(taskId);
@@ -256,7 +281,7 @@ public class FlowProcessServiceImpl implements FlowProcessService {
                 }
             }
         }
-    }
+    }*/
 
     @Override
     public boolean isCompleted(String processInstanceId) {
@@ -299,6 +324,16 @@ public class FlowProcessServiceImpl implements FlowProcessService {
             reject = (boolean) object;
         }
         return reject;
+    }
+
+    public Comment addComment(String taskId, String processInstanceId, String message) {
+        Comment comment = taskService.addComment(taskId, processInstanceId, message);
+        return comment;
+    }
+
+    public List<Comment> getComments(String taskId) {
+        List<Comment> comments = taskService.getTaskComments(taskId);
+        return comments;
     }
 
 }
