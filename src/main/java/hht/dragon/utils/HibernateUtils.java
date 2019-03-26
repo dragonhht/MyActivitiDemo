@@ -15,8 +15,8 @@ import java.util.List;
 @Component
 public class HibernateUtils{
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    /*@Autowired
+    private SessionFactory sessionFactory;*/
 
     /**
      * 获取表数据.
@@ -26,13 +26,13 @@ public class HibernateUtils{
      * @return 表数据
      */
     public Object getOne(String tableName, String idName, String idValue) {
-        Session session = sessionFactory.openSession();
+        /*Session session = sessionFactory.openSession();
         String hql = "select o from " + tableName + " o where o." + idName + " = " + idValue;
         List<Object> objects =  session.createQuery(hql).list();
         session.close();
         if (objects != null && objects.size() > 0) {
             return objects.get(0);
-        }
+        }*/
         return null;
     }
 

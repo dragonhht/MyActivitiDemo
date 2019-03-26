@@ -1,10 +1,9 @@
 server:
   port: 8080
-
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/actstudy?useUnicode=true&characterEncoding=UTF-8
-    username: root
+    url: jdbc:mysql://my.dragon.com:3306/actstudy?useUnicode=true&characterEncoding=UTF-8
+    username: huang
     password: 123
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
@@ -16,3 +15,9 @@ spring:
         dialect: org.hibernate.dialect.MySQL5Dialect
         format_sql: true
         use_sql_comments: true
+        temp:
+          use_jdbc_metadata_defaults: false
+  activiti:
+    database-schema: actstudy
+    database-schema-update: true
+    history-level: full
