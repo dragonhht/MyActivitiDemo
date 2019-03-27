@@ -1,23 +1,26 @@
 server:
   port: 8080
+  servlet:
+    context-path: /activiti/
+
 spring:
   datasource:
     url: jdbc:postgresql://my.dragon.com:5432/actstudy
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
+  # 添加其他配置信息
+  profiles:
+    include: activiti
   jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-        use_sql_comments: true
         temp:
+          # Spring Boot2需设置
           use_jdbc_metadata_defaults: false
-  activiti:
-    database-schema: actstudy
-    database-schema-update: true
-    history-level: full
+
+
+# mybatis配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

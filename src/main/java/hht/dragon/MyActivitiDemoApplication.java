@@ -17,9 +17,4 @@ public class MyActivitiDemoApplication {
         SpringApplication.run(MyActivitiDemoApplication.class, args);
     }
 
-    /*@Bean
-    public HibernateJpaSessionFactoryBean sessionFactory() {
-        return new HibernateJpaSessionFactoryBean();
-    }*/
-
 }

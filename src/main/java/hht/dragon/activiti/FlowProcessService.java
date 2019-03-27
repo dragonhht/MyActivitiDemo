@@ -5,6 +5,7 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,14 @@ public interface FlowProcessService {
      */
     void deploy(MultipartFile file, String name) throws IOException;
 
+    void deploy(InputStream input, String name, String fileName) throws IOException;
+
+    /**
+     * 部署流程定义.
+     * @param bpmnName classpath中bpm文件
+     * @param pngName classpath中png文件
+     * @param name 流程名
+     */
     void deploy(String bpmnName, String pngName, String name);
 
     void deploy(String bpmnName, String name);

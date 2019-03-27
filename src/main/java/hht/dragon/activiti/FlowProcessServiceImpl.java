@@ -9,6 +9,7 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,15 @@ public class FlowProcessServiceImpl implements FlowProcessService {
                 .name(name)
                 .addZipInputStream(zipInputStream)
                 .deploy();
+    }
+
+    @Override
+    public void deploy(InputStream input, String name, String fileName) throws IOException {
+        Deployment deployment = repositoryService.createDeployment()
+                .name(name)
+                .addInputStream(fileName, input)
+                .deploy();
+        System.out.println(deployment);
     }
 
     @Override

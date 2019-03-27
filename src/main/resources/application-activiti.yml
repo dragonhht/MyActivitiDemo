@@ -1,0 +1,7 @@
+spring:
+  activiti:
+    # 指定数据库schema
+    database-schema: actstudy
+    database-schema-update: true
+    history-level: full
+    db-history-used: true
