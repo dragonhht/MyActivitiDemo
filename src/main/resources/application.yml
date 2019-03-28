@@ -18,6 +18,10 @@ spring:
         temp:
           # Spring Boot2需设置
           use_jdbc_metadata_defaults: false
+  security:
+    user:
+      name: deptLeader
+      password: 123
 
 
 # mybatis配置

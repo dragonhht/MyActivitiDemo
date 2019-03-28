@@ -52,11 +52,18 @@ public class FlowProcessServiceImpl implements FlowProcessService {
 
     @Override
     public void deploy(InputStream input, String name, String fileName) throws IOException {
-        Deployment deployment = repositoryService.createDeployment()
+        repositoryService.createDeployment()
                 .name(name)
                 .addInputStream(fileName, input)
                 .deploy();
-        System.out.println(deployment);
+    }
+
+    @Override
+    public void deployByStr(String xmlStr, String name, String fileName) {
+        repositoryService.createDeployment()
+                .name(name)
+                .addString(fileName, xmlStr)
+                .deploy();
     }
 
     @Override
@@ -318,6 +325,11 @@ public class FlowProcessServiceImpl implements FlowProcessService {
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
                 .processInstanceId(processInstanceId).singleResult();
         return processInstance;
+    }
+
+    @Override
+    public void delDeploy(String id) {
+        repositoryService.deleteDeployment(id);
     }
 
     private Integer getIndex(String taskId) {

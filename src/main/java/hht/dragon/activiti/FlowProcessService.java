@@ -24,7 +24,22 @@ public interface FlowProcessService {
      */
     void deploy(MultipartFile file, String name) throws IOException;
 
+    /**
+     * 部署流程定义
+     * @param input bpm文件流
+     * @param name 流程名
+     * @param fileName bpm文件名
+     * @throws IOException
+     */
     void deploy(InputStream input, String name, String fileName) throws IOException;
+
+    /**
+     * 部署流程定义(通过字符串)
+     * @param xmlStr xml字符串
+     * @param name 流程名
+     * @param fileName 文件名
+     */
+    void deployByStr(String xmlStr, String name, String fileName);
 
     /**
      * 部署流程定义.
@@ -140,5 +155,11 @@ public interface FlowProcessService {
      * @return 流程实例
      */
     ProcessInstance getProcessInstanceByTeskId(String taskId);
+
+    /**
+     * 删除部署.
+     * @param id 部署的Id
+     */
+    void delDeploy(String id);
 
 }

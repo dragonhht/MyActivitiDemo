@@ -111,4 +111,81 @@ public void deploy(String bpmnName, String pngName, String name) {
 }
 ```
 
--   
+-   `以流的形式部署bpm文件`
+
+```
+/**
+ * 部署流程定义
+ * @param input bpm文件流
+ * @param name 流程名
+ * @param fileName bpm文件名
+ * @throws IOException
+ */
+public void deploy(InputStream input, String name, String fileName) throws IOException {
+    Deployment deployment = repositoryService.createDeployment()
+            .name(name)
+            .addInputStream(fileName, input)
+            .deploy();
+}
+```
+
+-   `通过字符串(流程定义的xml内容)部署`
+
+```
+/**
+ * 部署流程定义(通过字符串)
+ * @param xmlStr xml字符串
+ * @param name 流程名
+ * @param fileName 文件名
+ */
+public void deployByStr(String xmlStr, String name, String fileName) {
+    repositoryService.createDeployment()
+            .name(name)
+            .addString(fileName, xmlStr)
+            .deploy();
+}
+```
+
+#### 2、启动流程实例
+
+-   通过流程`key`，不带任何参数：`ProcessInstance processInstance = runtimeService.startProcessInstanceByKey(key);`
+
+#### 3、获取待办任务
+
+```groovy
+def userId = 'deptLeader'
+// 获取已签收或直接分配给指定用户的任务
+println "当前处理人为 $userId 的任务"
+def doingTasks = taskService.createTaskQuery()
+        .taskAssignee(userId)
+        .list()
+for (task in doingTasks) {
+    println "name is ${task.name}"
+}
+
+println "等待签收的任务"
+// 获取等待签收的任务
+def waitingTasks = taskService.createTaskQuery()
+        .taskCandidateUser(userId)
+        .list()
+for (task in waitingTasks) {
+    println "name is ${task.name}"
+}
+
+println "获取所有待办任务"
+// 获取所有待办任务, 以上两个方法的综合
+def todoTasks = taskService.createTaskQuery()
+        .taskCandidateOrAssigned(userId)
+        .list()
+for (task in todoTasks) {
+    println "name is ${task.name}"
+}
+```
+
+-   任务签收:通过调用`TaskService`下的`claim`方法完成任务的签收
+
+#### 4、完成任务
+
+-   通过调用`TaskService`下的`complete`方法实现任务的完成
+
+
