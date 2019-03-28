@@ -28,17 +28,17 @@ class ServiceTest {
 
     @Test
     void testDeloy() {
-        def filePath = 'D:\\my_work_spance\\idea_workspance\\MyActivitiDemo\\src\\main\\resources\\processes\\study\\leav-bill.bpmn'
-        def fileName = 'leav-bill.bpmn'
+        def filePath = 'D:\\my_work_spance\\idea_workspance\\MyActivitiDemo\\src\\main\\resources\\processes\\study\\leav-bill.xml'
+        def fileName = 'leav-bill.xml'
         def input = new FileInputStream(new File(filePath))
         flowProcessService.deploy(input, 'leave-bill', fileName)
     }
 
     @Test
     void testStringDeploy() {
-        def filePath = 'D:\\my_work_spance\\idea_workspance\\MyActivitiDemo\\src\\main\\resources\\processes\\study\\leav-bill.bpmn'
+        def filePath = 'D:\\my_work_spance\\idea_workspance\\MyActivitiDemo\\src\\main\\resources\\processes\\study\\leav-bill.xml'
         def text = new File(filePath).text
-        flowProcessService.deployByStr(text, 'leav-bill', 'leave-bill.bpmn')
+        flowProcessService.deployByStr(text, 'leav-bill', 'leave-bill.xml')
     }
 
     @Test

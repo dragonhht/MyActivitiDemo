@@ -1,11 +1,11 @@
 server:
-  port: 8080
+  port: 80
   servlet:
     context-path: /activiti/
 
 spring:
   datasource:
-    url: jdbc:postgresql://my.dragon.com:5432/actstudy
+    url: jdbc:postgresql://my.dragon.com:5432/activiti
     username: postgres
     password: 123
     driver-class-name: org.postgresql.Driver
@@ -22,7 +22,9 @@ spring:
     user:
       name: user
       password: 123
-
+  devtools:
+    restart:
+      enabled: true
 
 # mybatis配置
 mybatis:
