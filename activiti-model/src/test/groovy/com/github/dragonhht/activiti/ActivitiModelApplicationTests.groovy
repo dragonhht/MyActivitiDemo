@@ -17,6 +17,9 @@ class ActivitiModelApplicationTests {
     FlowProcessService flowProcessService
 
 
+    /**
+     * 部署接口测试.
+     */
     @Test
     void testDeploy() {
         // 通过zip包部署
@@ -49,6 +52,13 @@ class ActivitiModelApplicationTests {
         flowProcessService.delDeployById(deployment.id)
         deployment = null
 
+        // 通过ClassPath
+        def path = 'test/Test.bpmn'
+        deployment = flowProcessService.deployByClassPath(path, 'classpath-boll')
+        assert deployment != null
+        println "通过ClassPath部署: id is ${deployment.id}, name is ${deployment.name}, key is ${deployment.key}"
+
+        flowProcessService.delDeployById(deployment.id)
     }
 
     @Test

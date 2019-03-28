@@ -45,7 +45,8 @@ interface FlowProcessService {
      * @param name 流程名
      * @return 部署实例
      */
-    Deployment deployByClassPath(String filePath, String pngName, String name)
+    Deployment deployByClassPath(String filePath, String pngPath, String name)
+    Deployment deployByClassPath(String filePath, String name)
 
     /**
      * 通过部署Id删除部署.

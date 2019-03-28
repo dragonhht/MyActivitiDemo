@@ -1,8 +1,10 @@
 package com.github.dragonhht.activiti.service.impl
 
 import org.activiti.engine.RepositoryService
+import org.activiti.engine.RuntimeService
 import org.activiti.engine.repository.Deployment
 import com.github.dragonhht.activiti.service.FlowProcessService
+import org.activiti.engine.runtime.ProcessInstance
 import org.springframework.stereotype.Service
 
 import javax.annotation.Resource
@@ -18,6 +20,8 @@ class FlowProcessServiceImpl implements FlowProcessService {
 
     @Resource
     private RepositoryService repositoryService
+    @Resource
+    private RuntimeService runtimeService
 
     @Override
     Deployment deployByZipInputStream(ZipInputStream input, String name) {
@@ -53,12 +57,20 @@ class FlowProcessServiceImpl implements FlowProcessService {
     }
 
     @Override
-    Deployment deployByClassPath(String filePath, String pngName, String name) {
+    Deployment deployByClassPath(String filePath, String pngPath, String name) {
         return repositoryService.createDeployment()
                     .name(name)
                     .addClasspathResource(filePath)
-                    .addClasspathResource(pngName)
+                    .addClasspathResource(pngPath)
                     .deploy()
+    }
+
+    @Override
+    Deployment deployByClassPath(String filePath, String name) {
+        return repositoryService.createDeployment()
+                .name(name)
+                .addClasspathResource(filePath)
+                .deploy()
     }
 
     @Override
