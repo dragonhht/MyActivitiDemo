@@ -35,9 +35,14 @@ class TestController {
 
     @GetMapping("/fileEdit")
     String fileEdit(Model model) {
-        //def locale = Locale.CHINA
         model.addAttribute('formAction', '/test/upload')
+        model.addAttribute('key', 'upload')
         return 'components/file_edit'
+    }
+
+    @GetMapping("/bpmn/view")
+    String view() {
+        return '../static/dist/index.html'
     }
 
 }

@@ -26,18 +26,20 @@ spring:
   devtools:
     restart:
       enabled: true
+      additional-paths: src/main/groovy
+
   # thymeleaf
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
-    mode: HTML5
+    mode: LEGACYHTML5
     encoding: UTF-8
     cache: false
     servlet:
       content-type: text/html
   # 国际化文件
   messages:
-    basename: i18n
+    basename: i18n.messages
 
 # mybatis配置
 mybatis:
