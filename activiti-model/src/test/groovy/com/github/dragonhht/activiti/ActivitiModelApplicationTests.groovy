@@ -1,6 +1,7 @@
 package com.github.dragonhht.activiti
 
 import com.github.dragonhht.activiti.service.FlowProcessService
+import lombok.extern.slf4j.Slf4j
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -65,6 +66,36 @@ class ActivitiModelApplicationTests {
     void delDeploy() {
         def id = '440d6a93-513f-11e9-9ece-00ff43c03ffc'
         flowProcessService.delDeployById(id)
+    }
+
+    @Test
+    void testTask() {
+        def key = 'bill'
+        def path = 'test/Test2.bpmn'
+        def deployment = flowProcessService.deployByClassPath(path, 'classpath-bill')
+        assert deployment != null
+        println "通过ClassPath部署: id is ${deployment.id}, name is ${deployment.name}, key is ${deployment.key}"
+
+        def processInstance = flowProcessService.startProcess(key)
+
+        println "流程实例id: ${processInstance.id}, name: ${processInstance.name}, processDefinitionId: ${processInstance.processDefinitionId}"
+
+        // 获取待办数据
+        def userId = 'user'
+        def tasks = flowProcessService.getTodoTasks(userId)
+        for (task in tasks) {
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            flowProcessService.complete(task.id)
+        }
+
+        println '---------------------------------------'
+        tasks = flowProcessService.getTodoTasks(userId)
+        for (task in tasks) {
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            flowProcessService.complete(task.id)
+        }
+
+        flowProcessService.delDeployById(deployment.id)
     }
 
 }
