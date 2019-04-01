@@ -21,10 +21,12 @@ class FreeJumpCommand implements Command<Void> {
 
     private String taskId
     private String nodeId
+    private Map<String, Object> variables
 
-    public FreeJumpCommand(String taskId, String nodeId) {
+    FreeJumpCommand(String taskId, String nodeId, Map<String, Object> variables) {
         this.taskId = taskId
         this.nodeId = nodeId
+        this.variables = variables
     }
 
     @Override
@@ -36,10 +38,14 @@ class FreeJumpCommand implements Command<Void> {
         def executionEntity = executionEntityManager.findById(taskEntity.getExecutionId())
         def process = ProcessDefinitionUtil.getProcess(executionEntity.getProcessDefinitionId())
         // 删除当前节点
-        taskEntityManager.deleteTask(taskEntity, "jump", true, true)
+        taskEntityManager.deleteTask(taskEntity, "jump", false, false)
+
         // 获取要跳转的目标节点
         def targetFlowElement = process.getFlowElement(this.nodeId)
         executionEntity.setCurrentFlowElement(targetFlowElement)
+        if (variables) {
+            executionEntity.setVariables(variables)
+        }
         def agenda = commandContext.getAgenda()
         agenda.planContinueProcessInCompensation(executionEntity)
         return null

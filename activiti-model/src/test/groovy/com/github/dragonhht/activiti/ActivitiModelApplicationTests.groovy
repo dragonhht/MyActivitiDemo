@@ -93,7 +93,7 @@ class ActivitiModelApplicationTests {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
             println "参数: value=${flowProcessService.getVariable(task.id, 'name')}"
             println "---"
-            flowProcessService.getVariables(task.id).each {keyx, value -> println "$key, $value"}
+            flowProcessService.getVariables(task.id).each {keyx, value -> println "$keyx, $value"}
             flowProcessService.setAssign(task.id, 'haha')
             flowProcessService.complete(task.id)
         }
@@ -105,7 +105,8 @@ class ActivitiModelApplicationTests {
             def definitionKey = task.getTaskDefinitionKey()
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
             // 回到指定节点
-            flowProcessService.jumpToNode(task.id, '_3')
+            def va = ['name': 'test', 'index': 109]
+            flowProcessService.jumpToNode(task.id, '_3', va)
             flowProcessService.setBackTaskDealer(processInstanceId, '_3')
         }
 
@@ -113,14 +114,14 @@ class ActivitiModelApplicationTests {
         tasks = flowProcessService.getTodoTasks('haha')
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
-            flowProcessService.getVariables(task.id).each {keyx, value -> println "$key, $value"}
+            flowProcessService.getVariables(task.id).each {keyx, value -> println "$keyx, $value"}
             flowProcessService.complete(task.id)
         }
         println '------------第二个节点---------------------------'
         tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
-            flowProcessService.getVariables(task.id).each {keyx, value -> println "$key, $value"}
+            flowProcessService.getVariables(task.id).each {keyx, value -> println "$keyx, $value"}
             flowProcessService.complete(task.id)
         }
 
@@ -128,7 +129,7 @@ class ActivitiModelApplicationTests {
         tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
-            flowProcessService.getVariables(task.id).each {keyx, value -> println "$key, $value"}
+            flowProcessService.getVariables(task.id).each {keyx, value -> println "$keyx, $value"}
             flowProcessService.complete(task.id)
         }
 

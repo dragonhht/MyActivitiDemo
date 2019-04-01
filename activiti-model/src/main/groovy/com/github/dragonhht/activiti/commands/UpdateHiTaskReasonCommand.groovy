@@ -28,7 +28,7 @@ class UpdateHiTaskReasonCommand implements Command<Void> {
                 .getDbSqlSession().selectById(HistoricTaskInstanceEntity.class, this.taskId)
         if (historicTaskInstance != null) {
             historicTaskInstance.setDeleteReason(deleteReason)
-            //historicTaskInstance.markEnded(deleteReason);
+            historicTaskInstance.markEnded(deleteReason);
         }
         return null;
     }

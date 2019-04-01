@@ -99,11 +99,18 @@ interface FlowProcessService {
     void setAssign(String taskId, String assignId)
 
     /**
-     * 跳转至指定节点.
+     * 跳转至指定节点(不会设置历史处理人).
      * @param taskId 当前任务ID
-     * @param nodeId 跳转带的节点Id
+     * @param nodeId 跳转到的节点Id
      */
-    void jumpToNode(String taskId, String nodeId)
+    void jumpToNode(String taskId, String nodeId, Map<String, Object> variables)
+
+    /**
+     * 跳转至指定节点(已经处理的节点会将历史处理人设置为处理人)
+     * @param task 任务
+     * @param nodeId 跳转到的节点Id
+     */
+    void jumpToNode(Task task, String nodeId, Map<String, Object> variables)
 
     /**
      * 跳转任意节点后将处理人设置为历史处理人.

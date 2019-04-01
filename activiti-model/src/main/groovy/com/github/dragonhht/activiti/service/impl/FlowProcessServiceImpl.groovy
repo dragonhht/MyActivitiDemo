@@ -131,10 +131,18 @@ class FlowProcessServiceImpl implements FlowProcessService {
     }
 
     @Override
-    void jumpToNode(String taskId, String nodeId) {
-        managementService.executeCommand(new FreeJumpCommand(taskId, nodeId))
+    void jumpToNode(String taskId, String nodeId, Map<String, Object> variables = [:]) {
+        managementService.executeCommand(new FreeJumpCommand(taskId, nodeId, variables))
     }
 
+    @Override
+    void jumpToNode(Task task, String nodeId, Map<String, Object> variables = [:]) {
+        def taskId = task.id
+        managementService.executeCommand(new FreeJumpCommand(task, nodeId, variables))
+        setBackTaskDealer(task.processInstanceId, nodeId)
+    }
+
+    @Override
     void setBackTaskDealer(String processInstanceId, String definitionKey) {
         def list = historyService.createHistoricTaskInstanceQuery()
                 .processInstanceId(processInstanceId)
