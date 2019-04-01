@@ -23,6 +23,7 @@ spring:
     user:
       name: user
       password: 123
+
   devtools:
     restart:
       enabled: true

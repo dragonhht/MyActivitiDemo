@@ -216,8 +216,8 @@ for (task in todoTasks) {
     |ACTIVITY_STARTED   |一个节点开始执行|
     |ACTIVITY_COMPLETED |一个节点成功结束|
     |ACTIVITY_SIGNALED  |一个节点收到了一个信号|
-    |ACTIVITY_MESSAGE_RECEIVED  ||一个节点收到了一个消息。在节点收到消息之前触发。收到后，会触发ACTIVITY_SIGNAL或ACTIVITY_STARTED，这会根据节点的类型（边界事件，事件子流程开始事件）|
-    |ACTIVITY_ERROR_RECEIVED    ||一个节点收到了一个错误事件。在节点实际处理错误之前触发。   事件的activityId对应着处理错误的节点。 这个事件后续会是ACTIVITY_SIGNALLED或ACTIVITY_COMPLETE， 如果错误发送成功的话。|
+    |ACTIVITY_MESSAGE_RECEIVED  |一个节点收到了一个消息。在节点收到消息之前触发。收到后，会触发ACTIVITY_SIGNAL或ACTIVITY_STARTED，这会根据节点的类型（边界事件，事件子流程开始事件）|
+    |ACTIVITY_ERROR_RECEIVED    |一个节点收到了一个错误事件。在节点实际处理错误之前触发。   事件的activityId对应着处理错误的节点。 这个事件后续会是ACTIVITY_SIGNALLED或ACTIVITY_COMPLETE， 如果错误发送成功的话。|
     |UNCAUGHT_BPMN_ERROR    |抛出了未捕获的BPMN错误。流程没有提供针对这个错误的处理器。   事件的activityId为空。|
     |ACTIVITY_COMPENSATE    |一个节点将要被补偿。事件包含了将要执行补偿的节点id。|
     |VARIABLE_CREATED   |创建了一个变量。事件包含变量名，变量值和对应的分支或任务（如果存在）。|
@@ -272,3 +272,7 @@ for (task in todoTasks) {
             }
         }
         ```
+        
+    -   使用`RuntimeService`添加监听: 通过`RuntimeService`中的`addEventListener`和`removeEventListener`方法可添加和移除监听
+    
+    -   监听还可以在流程定义时添加

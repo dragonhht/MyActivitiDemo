@@ -1,7 +1,9 @@
 package com.github.dragonhht.activiti
 
+import com.github.dragonhht.activiti.commands.FreeJumpCommand
 import com.github.dragonhht.activiti.service.FlowProcessService
-import lombok.extern.slf4j.Slf4j
+import org.activiti.engine.ManagementService
+import org.activiti.engine.RuntimeService
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +18,10 @@ class ActivitiModelApplicationTests {
 
     @Autowired
     FlowProcessService flowProcessService
-
+    @Autowired
+    private RuntimeService runtimeService
+    @Autowired
+    private ManagementService managementService
 
     /**
      * 部署接口测试.
@@ -75,27 +80,59 @@ class ActivitiModelApplicationTests {
         def deployment = flowProcessService.deployByClassPath(path, 'classpath-bill')
         assert deployment != null
         println "通过ClassPath部署: id is ${deployment.id}, name is ${deployment.name}, key is ${deployment.key}"
-
-        def processInstance = flowProcessService.startProcess(key)
+        def vas = ['name': 'hello', age: 12]
+        def processInstance = flowProcessService.startProcess(key, vas)
 
         println "流程实例id: ${processInstance.id}, name: ${processInstance.name}, processDefinitionId: ${processInstance.processDefinitionId}"
 
         // 获取待办数据
         def userId = 'user'
+        println '-----------------第一节点----------------------'
         def tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            println "参数: value=${flowProcessService.getVariable(task.id, 'name')}"
+            println "---"
+            flowProcessService.getVariables(task.id).each {keyx, value -> println "$key, $value"}
+            flowProcessService.setAssign(task.id, 'haha')
             flowProcessService.complete(task.id)
         }
 
-        println '---------------------------------------'
+        println '-----------------第二节点跳转----------------------'
+        tasks = flowProcessService.getTodoTasks(userId)
+        for (task in tasks) {
+            def processInstanceId = task.getProcessInstanceId()
+            def definitionKey = task.getTaskDefinitionKey()
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            // 回到指定节点
+            flowProcessService.jumpToNode(task.id, '_3')
+            flowProcessService.setBackTaskDealer(processInstanceId, '_3')
+        }
+
+        println '-----------------跳转后的节点----------------------'
+        tasks = flowProcessService.getTodoTasks('haha')
+        for (task in tasks) {
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            flowProcessService.getVariables(task.id).each {keyx, value -> println "$key, $value"}
+            flowProcessService.complete(task.id)
+        }
+        println '------------第二个节点---------------------------'
         tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            flowProcessService.getVariables(task.id).each {keyx, value -> println "$key, $value"}
             flowProcessService.complete(task.id)
         }
 
-        flowProcessService.delDeployById(deployment.id)
+        println '------------++----+++---------------------------'
+        tasks = flowProcessService.getTodoTasks(userId)
+        for (task in tasks) {
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            flowProcessService.getVariables(task.id).each {keyx, value -> println "$key, $value"}
+            flowProcessService.complete(task.id)
+        }
+
+        //flowProcessService.delDeployById(deployment.id)
     }
 
 }

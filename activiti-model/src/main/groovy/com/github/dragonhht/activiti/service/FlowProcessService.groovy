@@ -61,13 +61,13 @@ interface FlowProcessService {
      * @param id 流程资源key
      * @return 流程实例
      */
-    ProcessInstance startProcess(String key)
+    ProcessInstance startProcess(String key, Map variables)
 
     /**
      * 完成任务.
      * @param taskId 任务Id
      */
-    void complete(String taskId)
+    void complete(String taskId, Map variables)
 
     /**
      * 获取待办数据
@@ -75,4 +75,40 @@ interface FlowProcessService {
      * @return 所有待办
      */
     List<Task> getTodoTasks(String userId)
+
+    /**
+     * 获取任务参数.
+     * @param taskId 任务ID
+     * @param key 参数的键
+     * @return 参数值
+     */
+    Object getVariable(String taskId, String key)
+
+    /**
+     * 获取任务参数
+     * @param taskId 任务ID
+     * @return 任务的所有参数
+     */
+    Map<String, Object> getVariables(String taskId)
+
+    /**
+     * 设置签收人.
+     * @param taskId 任务Id
+     * @param assignId 签收人
+     */
+    void setAssign(String taskId, String assignId)
+
+    /**
+     * 跳转至指定节点.
+     * @param taskId 当前任务ID
+     * @param nodeId 跳转带的节点Id
+     */
+    void jumpToNode(String taskId, String nodeId)
+
+    /**
+     * 跳转任意节点后将处理人设置为历史处理人.
+     * @param processInstanceId 流程实例id
+     * @param definitionKey 流程定义key
+     */
+    void setBackTaskDealer(String processInstanceId, String definitionKey)
 }

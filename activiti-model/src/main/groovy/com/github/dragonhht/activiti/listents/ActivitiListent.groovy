@@ -17,6 +17,7 @@ class ActivitiListent implements ActivitiEventListener {
 
     @Override
     void onEvent(ActivitiEvent activitiEvent) {
+
         if (ActivitiEventType.TASK_COMPLETED == activitiEvent.type) {
             println "ActivitiEventListener: ${activitiEvent.type}"
         }
