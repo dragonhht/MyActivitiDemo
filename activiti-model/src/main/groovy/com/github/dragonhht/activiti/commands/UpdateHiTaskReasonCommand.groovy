@@ -1,7 +1,6 @@
 package com.github.dragonhht.activiti.commands
 
-import lombok.AllArgsConstructor
-import lombok.Getter
+
 import org.activiti.engine.impl.interceptor.Command
 import org.activiti.engine.impl.interceptor.CommandContext
 import org.activiti.engine.impl.persistence.entity.HistoricTaskInstanceEntity
@@ -17,7 +16,7 @@ class UpdateHiTaskReasonCommand implements Command<Void> {
     private String taskId
     private String deleteReason
 
-    public UpdateHiTaskReasonCommand(String taskId, String deleteReason) {
+    UpdateHiTaskReasonCommand(String taskId, String deleteReason) {
         this.taskId = taskId
         this.deleteReason = deleteReason
     }

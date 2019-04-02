@@ -1,6 +1,7 @@
 package com.github.dragonhht.activiti.service.impl
 
 import com.github.dragonhht.activiti.commands.FreeJumpCommand
+import com.github.dragonhht.activiti.commands.ResetTaskAssignee
 import com.github.dragonhht.activiti.commands.UpdateHiTaskReasonCommand
 import com.github.dragonhht.activiti.service.FlowProcessService
 import org.activiti.engine.HistoryService
@@ -106,6 +107,7 @@ class FlowProcessServiceImpl implements FlowProcessService {
     void complete(String taskId, Map variables = [:]) {
         taskService.complete(taskId, variables)
         managementService.executeCommand(new UpdateHiTaskReasonCommand(taskId, 'completed'))
+        managementService.executeCommand(new ResetTaskAssignee(taskId))
     }
 
     @Override
@@ -137,7 +139,6 @@ class FlowProcessServiceImpl implements FlowProcessService {
 
     @Override
     void jumpToNode(Task task, String nodeId, Map<String, Object> variables = [:]) {
-        def taskId = task.id
         managementService.executeCommand(new FreeJumpCommand(task, nodeId, variables))
         setBackTaskDealer(task.processInstanceId, nodeId)
     }
@@ -150,7 +151,7 @@ class FlowProcessServiceImpl implements FlowProcessService {
                 .taskDeleteReason("completed")
                 .orderByTaskCreateTime().desc()
                 .list()
-        def historicTask = null;
+        def historicTask = null
         if (list != null && list.size() > 0) {
             historicTask = list.get(0)
             // 查询回退后的节点正在运行的任务

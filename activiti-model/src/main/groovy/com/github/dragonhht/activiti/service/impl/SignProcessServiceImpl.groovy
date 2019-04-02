@@ -30,8 +30,8 @@ class SignProcessServiceImpl implements SignProcessService {
 
     @Override
     void startSign(List<String> assignees, String taskId, Map<String, Object> variables = [:]) {
+        def task = baseService.findTaskById(taskId)
         for (assign in assignees) {
-            def task = baseService.findTaskById(taskId)
             def taskEntity = taskService.newTask(IDGenerator.id) as TaskEntity
             taskEntity.assignee = assign
             taskEntity.name = "${task.name}-会签"
@@ -41,5 +41,7 @@ class SignProcessServiceImpl implements SignProcessService {
             taskEntity.variables = variables
             taskService.saveTask(taskEntity)
         }
+        // 将处理人添加会签标志，表示有会签子流程
+        taskService.setAssignee(taskId, "sign:${task.assignee}")
     }
 }

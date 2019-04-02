@@ -5,6 +5,7 @@ import com.github.dragonhht.activiti.service.FlowProcessService
 import com.github.dragonhht.activiti.service.SignProcessService
 import org.activiti.engine.ManagementService
 import org.activiti.engine.RuntimeService
+import org.activiti.engine.TaskService
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,6 +26,8 @@ class ActivitiModelApplicationTests {
     private ManagementService managementService
     @Autowired
     private SignProcessService signProcessService
+    @Autowired
+    private TaskService taskService
 
     /**
      * 部署接口测试.
@@ -141,6 +144,7 @@ class ActivitiModelApplicationTests {
 
     @Test
     void testSign() {
+        def taskId
         def key = 'bill'
         def path = 'test/Test2.bpmn'
         def deployment = flowProcessService.deployByClassPath(path, 'classpath-bill')
@@ -155,6 +159,7 @@ class ActivitiModelApplicationTests {
         println '-----------------第一节点----------------------'
         def tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
+            taskId = task.id
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
             def persons = ['person_1', 'person_2', 'person_3']
             signProcessService.startSign(persons, task.id)
@@ -162,6 +167,24 @@ class ActivitiModelApplicationTests {
 
         println '-----------------第二节点----------------------'
         tasks = flowProcessService.getTodoTasks('person_1')
+        for (task in tasks) {
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            flowProcessService.complete(task.id)
+        }
+        println '-----------------第二节点----------------------'
+        tasks = flowProcessService.getTodoTasks('person_2')
+        for (task in tasks) {
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            flowProcessService.complete(task.id)
+        }
+        println '-----------------第二节点----------------------'
+        tasks = flowProcessService.getTodoTasks('person_3')
+        for (task in tasks) {
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            flowProcessService.complete(task.id)
+        }
+        println '-----------------第二节点----------------------'
+        tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
             flowProcessService.complete(task.id)

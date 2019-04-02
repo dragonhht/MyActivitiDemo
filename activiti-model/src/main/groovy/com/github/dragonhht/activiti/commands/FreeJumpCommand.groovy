@@ -1,15 +1,9 @@
 package com.github.dragonhht.activiti.commands
 
-import org.activiti.bpmn.model.FlowElement
-import org.activiti.engine.ActivitiEngineAgenda
+
 import org.activiti.engine.impl.interceptor.Command
 import org.activiti.engine.impl.interceptor.CommandContext
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity
-import org.activiti.engine.impl.persistence.entity.ExecutionEntityManager
-import org.activiti.engine.impl.persistence.entity.TaskEntity
-import org.activiti.engine.impl.persistence.entity.TaskEntityManager
 import org.activiti.engine.impl.util.ProcessDefinitionUtil
-import org.activiti.bpmn.model.Process
 
 /**
  * 自由跳转节点.
