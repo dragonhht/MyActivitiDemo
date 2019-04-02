@@ -1,7 +1,8 @@
 package com.github.dragonhht.activiti
 
-import com.github.dragonhht.activiti.commands.FreeJumpCommand
+
 import com.github.dragonhht.activiti.service.FlowProcessService
+import com.github.dragonhht.activiti.service.SignProcessService
 import org.activiti.engine.ManagementService
 import org.activiti.engine.RuntimeService
 import org.junit.Test
@@ -22,6 +23,8 @@ class ActivitiModelApplicationTests {
     private RuntimeService runtimeService
     @Autowired
     private ManagementService managementService
+    @Autowired
+    private SignProcessService signProcessService
 
     /**
      * 部署接口测试.
@@ -134,6 +137,36 @@ class ActivitiModelApplicationTests {
         }
 
         //flowProcessService.delDeployById(deployment.id)
+    }
+
+    @Test
+    void testSign() {
+        def key = 'bill'
+        def path = 'test/Test2.bpmn'
+        def deployment = flowProcessService.deployByClassPath(path, 'classpath-bill')
+        assert deployment != null
+        println "通过ClassPath部署: id is ${deployment.id}, name is ${deployment.name}, key is ${deployment.key}"
+        def vas = ['name': 'hello', age: 12]
+        def processInstance = flowProcessService.startProcess(key, vas)
+        println "流程实例id: ${processInstance.id}, name: ${processInstance.name}, processDefinitionId: ${processInstance.processDefinitionId}"
+
+        // 获取待办数据
+        def userId = 'user'
+        println '-----------------第一节点----------------------'
+        def tasks = flowProcessService.getTodoTasks(userId)
+        for (task in tasks) {
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            def persons = ['person_1', 'person_2', 'person_3']
+            signProcessService.startSign(persons, task.id)
+        }
+
+        println '-----------------第二节点----------------------'
+        tasks = flowProcessService.getTodoTasks('person_1')
+        for (task in tasks) {
+            println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
+            flowProcessService.complete(task.id)
+        }
+
     }
 
 }
