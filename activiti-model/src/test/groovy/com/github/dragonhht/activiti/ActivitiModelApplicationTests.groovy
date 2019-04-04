@@ -55,7 +55,7 @@ class ActivitiModelApplicationTests {
         deployment = null
 
         // 通过bpmn文件流部署
-        def bpmnUrl = 'D:\\my_work_spance\\idea_workspance\\MyActivitiDemo\\activiti-model\\src\\main\\resources\\test\\Test.bpmn'
+        def bpmnUrl = 'D:\\my_work_spance\\idea_workspance\\MyActivitiDemo\\activiti-model\\src\\main\\resources\\test\\Test3.bpmn'
         def bpmnInput = new File(bpmnUrl).newInputStream()
         deployment = flowProcessService.deployByBpmnInputStream(bpmnInput, 'bpmn-input-bill', 'Test')
         assert deployment != null
@@ -65,7 +65,7 @@ class ActivitiModelApplicationTests {
         deployment = null
 
         // 通过ClassPath
-        def path = 'test/Test.bpmn'
+        def path = 'test/Test3.bpmn'
         deployment = flowProcessService.deployByClassPath(path, 'classpath-boll')
         assert deployment != null
         println "通过ClassPath部署: id is ${deployment.id}, name is ${deployment.name}, key is ${deployment.key}"
@@ -82,7 +82,7 @@ class ActivitiModelApplicationTests {
     @Test
     void testTask() {
         def key = 'bill'
-        def path = 'test/Test2.bpmn'
+        def path = 'test/Test.bpmn'
         def deployment = flowProcessService.deployByClassPath(path, 'classpath-bill')
         assert deployment != null
         println "通过ClassPath部署: id is ${deployment.id}, name is ${deployment.name}, key is ${deployment.key}"
@@ -189,6 +189,20 @@ class ActivitiModelApplicationTests {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
             flowProcessService.complete(task.id)
         }
+
+    }
+
+    @Test
+    void testBpmn2() {
+        def key = 'bill'
+        def path = 'test/Test.bpmn'
+        def deployment = flowProcessService.deployByClassPath(path, 'classpath-bill', key)
+        assert deployment != null
+        println "通过ClassPath部署: id is ${deployment.id}, name is ${deployment.name}, key is ${deployment.key}"
+        def vas = ['name': 'hello', age: 12]
+        def processInstance = flowProcessService.startProcess(key, vas)
+
+        println "流程实例id: ${processInstance.id}, name: ${processInstance.name}, processDefinitionId: ${processInstance.processDefinitionId}"
 
     }
 

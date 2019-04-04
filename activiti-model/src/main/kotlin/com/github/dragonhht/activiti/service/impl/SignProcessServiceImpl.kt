@@ -19,20 +19,19 @@ import javax.annotation.Resource
  */
 @Slf4j
 @Service
-class SignProcessServiceImpl implements SignProcessService {
+open class SignProcessServiceImpl: SignProcessService {
 
     @Resource
-    private TaskService taskService
+    private lateinit var taskService: TaskService
     @Resource
-    private BaseService baseService
+    private lateinit var baseService: BaseService
     @Resource
-    private RuntimeService runtimeService
+    private lateinit var runtimeService: RuntimeService
 
-    @Override
-    void startSign(List<String> assignees, String taskId, Map<String, Object> variables = [:]) {
-        def task = baseService.findTaskById(taskId)
+    override fun startSign(assignees: List<String>, taskId: String, variables: Map<String, Any>) {
+        val task = baseService.findTaskById(taskId)
         for (assign in assignees) {
-            def taskEntity = taskService.newTask(IDGenerator.id) as TaskEntity
+            val taskEntity = taskService.newTask(IDGenerator.getId()) as TaskEntity
             taskEntity.assignee = assign
             taskEntity.name = "${task.name}-会签"
             taskEntity.processDefinitionId = task.processDefinitionId

@@ -28,6 +28,7 @@ spring:
     restart:
       enabled: true
       additional-paths: src/main/groovy
+      exclude: src/test/**
 
   # thymeleaf
   thymeleaf:

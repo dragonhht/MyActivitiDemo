@@ -12,6 +12,6 @@ interface SignProcessService {
      * 启动会签任务
      * @param assignees 会签处理人
      */
-    void startSign(List<String> assignees, String taskId, Map<String, Object> variables)
+    fun startSign(assignees: List<String>, taskId: String, variables: Map<String, Any> = mutableMapOf())
 
 }

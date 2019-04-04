@@ -13,19 +13,15 @@ import org.springframework.stereotype.Component
  * @Date: 2019-3-31
  */
 @Component
-class ActivitiListent implements ActivitiEventListener {
+open class ActivitiListent: ActivitiEventListener {
 
-    @Override
-    void onEvent(ActivitiEvent activitiEvent) {
-
+    override fun onEvent(activitiEvent: ActivitiEvent) {
         if (ActivitiEventType.TASK_COMPLETED == activitiEvent.type) {
-            println "ActivitiEventListener: ${activitiEvent.type}"
+            println("ActivitiEventListener: ${activitiEvent.type}")
         }
     }
 
-    @Override
-    boolean isFailOnException() {
-
+    override fun isFailOnException(): Boolean {
         return false
     }
 }
