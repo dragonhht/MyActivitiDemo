@@ -11,7 +11,10 @@ interface SignProcessService {
     /**
      * 启动会签任务
      * @param assignees 会签处理人
+     * @param taskId 任务Id
+     * @param isSequential 是否串行
+     * @param variables 参数
      */
-    fun startSign(assignees: List<String>, taskId: String, variables: Map<String, Any> = mutableMapOf())
+    fun startSign(assignees: List<String>, taskId: String, isSequential: Boolean = false, variables: MutableMap<String, Any> = mutableMapOf())
 
 }

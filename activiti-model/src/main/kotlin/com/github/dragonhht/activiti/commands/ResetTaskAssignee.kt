@@ -31,7 +31,6 @@ class ResetTaskAssignee constructor(var taskId: String): Command<Unit> {
                     task.assignee = splits[1]
                 }
             }
-            println(count)
         }
         return null
     }

@@ -29,7 +29,7 @@ import java.util.zip.ZipInputStream
  * @author: huang
  * @Date: 2019-3-28
  */
-@Service
+@Service("flowProcessService")
 open class FlowProcessServiceImpl: FlowProcessService {
 
     @Resource
