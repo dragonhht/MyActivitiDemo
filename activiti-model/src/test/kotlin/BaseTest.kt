@@ -33,7 +33,8 @@ class BaseTest {
     @Before
     fun init() {
         // 会签串行
-        flowProcessService.deployByClassPath("processes/system/sign.bpmn", "sign_sequential")
+        flowProcessService.deployByClassPath("processes/system/sign_sequential.bpmn", "sign_sequential")
+        flowProcessService.deployByClassPath("processes/system/sign_not_sequential.bpmn", "sign_not_sequential")
     }
 
     @Test
@@ -70,7 +71,13 @@ class BaseTest {
             taskId = task.id
             println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
             val persons = mutableListOf<String>("person_1", "person_2")
-            signProcessService.startSign(persons, task.id, isSequential = true)
+            signProcessService.startSign(persons, task.id, isSequential = false)
+        }
+        println("------------------主任务节点------------------------")
+        tasks = flowProcessService.getTodoTasks(userId)
+        for (task in tasks) {
+            taskId = task.id
+            println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
         }
         println("------------------第二节点------------------------")
         tasks = flowProcessService.getTodoTasks("person_1")
@@ -87,7 +94,7 @@ class BaseTest {
             flowProcessService.complete(taskId)
         }
 
-        println("------------------第四节点------------------------")
+        println("------------------主任务节点------------------------")
         tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             taskId = task.id

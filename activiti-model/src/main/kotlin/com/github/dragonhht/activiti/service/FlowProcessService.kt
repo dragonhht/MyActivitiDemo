@@ -119,4 +119,16 @@ interface FlowProcessService {
      * @param definitionKey 流程定义key
      */
     fun setBackTaskDealer(processInstanceId: String, definitionKey: String)
+
+    /**
+     * 将流程挂起.
+     * @param id 流程实例Id
+     */
+    fun suspendProcessInstanceById(id: String)
+
+    /**
+     * 将流程激活.
+     * @param id 流程实例Id
+     */
+    fun activeProcessInstanceById(id: String)
 }

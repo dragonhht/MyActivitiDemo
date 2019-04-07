@@ -105,6 +105,7 @@ open class FlowProcessServiceImpl: FlowProcessService {
     override fun getTodoTasks(userId: String): List<Task> {
         return taskService.createTaskQuery()
                 .taskAssignee(userId)
+                .active()
                 .list()
     }
 
@@ -164,5 +165,13 @@ open class FlowProcessServiceImpl: FlowProcessService {
                 }
             }
         }
+    }
+
+    override fun suspendProcessInstanceById(id: String) {
+        runtimeService.suspendProcessInstanceById(id)
+    }
+
+    override fun activeProcessInstanceById(id: String) {
+        runtimeService.activateProcessInstanceById(id)
     }
 }
