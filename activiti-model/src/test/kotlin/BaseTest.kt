@@ -2,6 +2,8 @@ import com.github.dragonhht.activiti.ActivitiModelApplication
 import com.github.dragonhht.activiti.service.FlowProcessService
 import com.github.dragonhht.activiti.service.SignProcessService
 import org.activiti.engine.RepositoryService
+import org.activiti.engine.RuntimeService
+import org.activiti.engine.TaskService
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,6 +31,10 @@ class BaseTest {
     private lateinit var repositoryService: RepositoryService
     @Autowired
     private lateinit var signProcessService: SignProcessService
+    @Autowired
+    private lateinit var runTimeService: RuntimeService
+    @Autowired
+    private lateinit var taskService: TaskService
 
     @Before
     fun init() {
@@ -55,6 +61,7 @@ class BaseTest {
     fun testSign() {
         var taskId: String
         val key = "bill"
+        val nodeId = "_9"
         val path = "test/Test2.bpmn"
         val deployment = flowProcessService.deployByClassPath(path, "classpath-bill")
         assertNotNull(deployment)
@@ -72,13 +79,35 @@ class BaseTest {
             println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
             val persons = mutableListOf<String>("person_1", "person_2")
             signProcessService.startSign(persons, task.id, isSequential = false)
+
         }
+
         println("------------------主任务节点------------------------")
         tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             taskId = task.id
             println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
+            //flowProcessService.jumpToNode(taskId, nodeId)
         }
+
+        println("------------------子节点------------------------")
+        tasks = flowProcessService.getTodoTasks("person_1")
+        for (task in tasks) {
+            taskId = task.id
+            println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
+            val persons = mutableListOf<String>("person_4", "person_5")
+            signProcessService.startSign(persons, taskId, isSequential = false)
+        }
+
+        println("------------------主任务节点------------------------")
+
+        tasks = taskService.createTaskQuery().taskAssignee(userId).list()
+        for (task in tasks) {
+            taskId = task.id
+            println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
+            flowProcessService.jumpToNode(taskId, nodeId)
+        }
+
         println("------------------第二节点------------------------")
         tasks = flowProcessService.getTodoTasks("person_1")
         for (task in tasks) {
@@ -99,7 +128,14 @@ class BaseTest {
         for (task in tasks) {
             taskId = task.id
             println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
+            flowProcessService.complete(taskId)
         }
+    }
+
+    @Test
+    fun test() {
+        val ss = null as String?
+        println(ss)
     }
 
 }

@@ -58,6 +58,19 @@ interface FlowProcessService {
     fun delDeployById(id: String)
 
     /**
+     * 根据流程实例id获取流程实例
+     */
+    fun getProcessInstanceById(id: String): ProcessInstance
+
+    /**
+     * 通过流程实例id设置流程实例的active
+     * @param id 流程实例Id
+     * @param active active值
+     * @return 修改后流程实例的active
+     */
+    /*fun setActiveByProcessInstanceId(id: String, active: Boolean): Boolean*/
+
+    /**
      * 启动流程实例
      * @param id 流程资源key
      * @return 流程实例
@@ -112,6 +125,13 @@ interface FlowProcessService {
      * @param nodeId 跳转到的节点Id
      */
     fun jumpToNode(task: Task, nodeId: String, variables: Map<String, Any> = mutableMapOf())
+
+    /**
+     * 跳转至指定节点(只能跳转主流程节点，已经处理的节点会将历史处理人设置为处理人)
+     * @param task 任务
+     * @param nodeId 跳转到的节点Id
+     */
+    fun jumpToMainNode(task: Task, nodeId: String, variables: Map<String, Any> = mutableMapOf())
 
     /**
      * 跳转任意节点后将处理人设置为历史处理人.

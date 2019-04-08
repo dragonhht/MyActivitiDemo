@@ -11,9 +11,7 @@
       </extensionElements>
     </endEvent>
     <sequenceFlow id="_6" sourceRef="signUserTask" targetRef="_4"/>
-    <userTask activiti:exclusive="true" id="_9" name="会签初始任务"/>
-    <sequenceFlow id="_10" sourceRef="_2" targetRef="_9"/>
-    <sequenceFlow id="_11" sourceRef="_9" targetRef="signUserTask"/>
+    <sequenceFlow id="_3" sourceRef="_2" targetRef="signUserTask"/>
   </process>
   <bpmndi:BPMNDiagram documentation="background=#3C3F41;count=1;horizontalcount=1;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
     <bpmndi:BPMNPlane bpmnElement="sign_not_sequential">
@@ -35,29 +33,16 @@
           <omgdc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="_9" id="Shape-_9">
-        <omgdc:Bounds height="55.0" width="85.0" x="310.0" y="85.0"/>
+      <bpmndi:BPMNEdge bpmnElement="_3" id="BPMNEdge__3" sourceElement="_2" targetElement="signUserTask">
+        <omgdi:waypoint x="346.0" y="42.0"/>
+        <omgdi:waypoint x="346.0" y="165.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="55.0" width="85.0" x="0.0" y="0.0"/>
+          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
         </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="_6" id="BPMNEdge__6" sourceElement="signUserTask" targetElement="_4">
         <omgdi:waypoint x="356.0" y="220.0"/>
         <omgdi:waypoint x="356.0" y="320.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_11" id="BPMNEdge__11" sourceElement="_9" targetElement="signUserTask">
-        <omgdi:waypoint x="352.5" y="140.0"/>
-        <omgdi:waypoint x="352.5" y="165.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="_10" id="BPMNEdge__10" sourceElement="_2" targetElement="_9">
-        <omgdi:waypoint x="346.0" y="42.0"/>
-        <omgdi:waypoint x="346.0" y="85.0"/>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
         </bpmndi:BPMNLabel>

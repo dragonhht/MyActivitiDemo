@@ -11,6 +11,7 @@ import org.activiti.engine.RepositoryService
 import org.activiti.engine.RuntimeService
 import org.activiti.engine.TaskService
 import org.activiti.engine.history.HistoricTaskInstance
+import org.activiti.engine.impl.persistence.entity.ExecutionEntity
 import org.activiti.engine.repository.Deployment
 import org.activiti.engine.runtime.ProcessInstance
 import org.activiti.engine.task.Task
@@ -92,6 +93,20 @@ open class FlowProcessServiceImpl: FlowProcessService {
         repositoryService.deleteDeployment(id)
     }
 
+    override fun getProcessInstanceById(id: String): ProcessInstance {
+        return runtimeService.createProcessInstanceQuery()
+                .processInstanceId(id)
+                .singleResult()
+    }
+
+    /*override fun setActiveByProcessInstanceId(id: String, active: Boolean): Boolean {
+        val executionEntity = runtimeService.createExecutionQuery()
+                .executionId(id)
+                .singleResult() as ExecutionEntity
+        executionEntity.isActive = active
+        return executionEntity.isActive
+    }*/
+
     override fun startProcess(key: String, variables: Map<String, Any>): ProcessInstance {
         return runtimeService.startProcessInstanceByKey(key, variables)
     }
@@ -99,7 +114,7 @@ open class FlowProcessServiceImpl: FlowProcessService {
     override fun complete(taskId: String, variables: Map<String, Any>) {
         taskService.complete(taskId, variables)
         managementService.executeCommand(UpdateHiTaskReasonCommand(taskId, "completed"))
-        managementService.executeCommand(ResetTaskAssignee(taskId))
+        //managementService.executeCommand(ResetTaskAssignee(taskId))
     }
 
     override fun getTodoTasks(userId: String): List<Task> {
@@ -128,6 +143,45 @@ open class FlowProcessServiceImpl: FlowProcessService {
     override fun jumpToNode(task: Task, nodeId: String, variables: Map<String, Any>) {
         managementService.executeCommand(FreeJumpCommand(task.id, nodeId, variables))
         setBackTaskDealer(task.processInstanceId, nodeId)
+    }
+
+    override fun jumpToMainNode(task: Task, nodeId: String, variables: Map<String, Any>) {
+
+    }
+
+    private fun findMainTaskByTask(subTask: Task): Task {
+        val parentInstanceIdKey = "parentProcessInstanceId"
+        var task = subTask
+        val parentInstanceId = getVariable(subTask.id, parentInstanceIdKey)
+        if (parentInstanceId != null) {
+            var parentId = parentInstanceId as String?
+            do {
+                parentId = getTaskParentInstanceId(parentId)
+            } while (parentId != null)
+        }
+        return task
+    }
+
+    /**
+     * 通过父流程ID获取父流程参数中的父流程Id
+     */
+    private fun getTaskParentInstanceId(parentInstanceId: String?): String? {
+        if (parentInstanceId == null) {
+            return null
+        }
+        var parentId: String?  = null
+        val instance = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(parentInstanceId)
+                .singleResult()
+        if (instance != null) {
+            val taskList = taskService.createTaskQuery()
+                    .processInstanceId(parentInstanceId)
+                    .list()
+            if (taskList != null && taskList.size > 0) {
+                parentId = getVariable(taskList[0].id, "parentProcessInstanceId") as String?
+            }
+        }
+        return parentId
     }
 
     override fun setBackTaskDealer(processInstanceId: String, definitionKey: String) {
