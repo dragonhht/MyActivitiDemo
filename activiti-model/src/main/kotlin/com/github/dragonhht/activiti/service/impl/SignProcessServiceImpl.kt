@@ -1,5 +1,6 @@
 package com.github.dragonhht.activiti.service.impl
 
+import com.github.dragonhht.activiti.params.SubTaskVariableKeys
 import com.github.dragonhht.activiti.params.SystemProcessKeys
 import com.github.dragonhht.activiti.service.BaseService
 import com.github.dragonhht.activiti.service.FlowProcessService
@@ -37,8 +38,8 @@ open class SignProcessServiceImpl: SignProcessService {
         if (variables != null) {
             variables["sign-isSequential-flag"] = isSequential
         }
-        variables["signPersons"] = assignees
-        variables["parentProcessInstanceId"] = task.processInstanceId
+        variables[SubTaskVariableKeys.SIGN_PERSONS] = assignees
+        variables[SubTaskVariableKeys.PARENT_PROCESS_INSTANCE_ID] = task.processInstanceId
         if(isSequential) {
             val signProcessInstance = runtimeService.startProcessInstanceByKey(SystemProcessKeys.SIGN_SEQUENTIAL, variables)
 

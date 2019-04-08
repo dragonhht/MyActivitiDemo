@@ -1,5 +1,6 @@
 package com.github.dragonhht.activiti.listents
 
+import com.github.dragonhht.activiti.params.SubTaskVariableKeys
 import com.github.dragonhht.activiti.service.FlowProcessService
 import com.github.dragonhht.activiti.utils.SpringContextUtil
 import org.activiti.engine.ActivitiException
@@ -27,7 +28,7 @@ class SignProcessEndListener: ExecutionListener {
 
     override fun notify(delegateExecution: DelegateExecution?) {
         val flowProcessService = SpringContextUtil.getApplicationContext()!!.getBean("flowProcessService") as FlowProcessService
-        val parentProcessInstanceId = delegateExecution!!.getVariable("parentProcessInstanceId") as String
+        val parentProcessInstanceId = delegateExecution!!.getVariable(SubTaskVariableKeys.PARENT_PROCESS_INSTANCE_ID) as String
         flowProcessService.activeProcessInstanceById(parentProcessInstanceId)
     }
 }
