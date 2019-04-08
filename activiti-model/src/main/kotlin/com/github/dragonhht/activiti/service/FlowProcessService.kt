@@ -96,14 +96,29 @@ interface FlowProcessService {
      * @param key 参数的键
      * @return 参数值
      */
-    fun getVariable(taskId: String, key: String): Any
+    fun getTaskVariable(taskId: String, key: String): Any?
+
+    /**
+     * 获取Execution参数
+     * @param executionId Execution ID
+     * @return 任务的所有参数
+     */
+    fun getExecutionVariables(executionId: String): Map<String, Any>?
+
+    /**
+     * 获取Execution参数.
+     * @param executionId Execution ID
+     * @param key 参数的键
+     * @return 参数值
+     */
+    fun getExecutionVariable(executionId: String, key: String): Any?
 
     /**
      * 获取任务参数
      * @param taskId 任务ID
      * @return 任务的所有参数
      */
-    fun getVariables(taskId: String): Map<String, Any>
+    fun getTaskVariables(taskId: String): Map<String, Any>?
 
     /**
      * 设置签收人.

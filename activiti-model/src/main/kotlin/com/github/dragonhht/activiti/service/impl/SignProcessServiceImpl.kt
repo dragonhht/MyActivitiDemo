@@ -40,8 +40,10 @@ open class SignProcessServiceImpl: SignProcessService {
         }
         variables[SubTaskVariableKeys.SIGN_PERSONS] = assignees
         variables[SubTaskVariableKeys.PARENT_PROCESS_INSTANCE_ID] = task.processInstanceId
+
         if(isSequential) {
             val signProcessInstance = runtimeService.startProcessInstanceByKey(SystemProcessKeys.SIGN_SEQUENTIAL, variables)
+            setSubInstanceId(task.executionId, signProcessInstance.id)
 
             val signTask = taskService.createTaskQuery()
                     .processInstanceId(signProcessInstance.id)
@@ -50,7 +52,7 @@ open class SignProcessServiceImpl: SignProcessService {
             taskService.saveTask(signTask)
         } else {
             val signProcessInstance = runtimeService.startProcessInstanceByKey(SystemProcessKeys.SIGN_NOT_SEQUENTIAL, variables)
-
+            setSubInstanceId(task.executionId, signProcessInstance.id)
             val signTasks = taskService.createTaskQuery()
                     .processInstanceId(signProcessInstance.id)
                     .list()
@@ -66,6 +68,19 @@ open class SignProcessServiceImpl: SignProcessService {
         if (!processInstance.isSuspended) {
             flowProcessService.suspendProcessInstanceById(task.processInstanceId)
         }
+    }
+
+    /**
+     * 记录任务下的子流程
+     */
+    private fun setSubInstanceId(executionId: String, instanceId: String) {
+        var subInstanceList = runtimeService.getVariable(executionId, "${executionId}-subInstances")
+        var subInstances = mutableListOf<String>(instanceId)
+        if (subInstanceList != null) {
+            subInstances = subInstanceList as MutableList<String>
+            subInstances.add(instanceId)
+        }
+        runtimeService.setVariable(executionId, "${executionId}-subInstances", subInstances)
     }
 
     /**

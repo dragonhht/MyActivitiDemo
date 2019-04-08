@@ -10,9 +10,6 @@ import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
-import java.lang.StringBuilder
-import java.nio.file.Files
-import java.nio.file.Paths
 import kotlin.test.assertNotNull
 
 /**
@@ -79,7 +76,7 @@ class BaseTest {
             println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
             val persons = mutableListOf<String>("person_1", "person_2")
             signProcessService.startSign(persons, task.id, isSequential = false)
-
+            println("ids is : ${flowProcessService.getExecutionVariable(task.executionId, "${taskId}-subTasks")}")
         }
 
         println("------------------主任务节点------------------------")
@@ -96,7 +93,7 @@ class BaseTest {
             taskId = task.id
             println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
             val persons = mutableListOf<String>("person_4", "person_5")
-            signProcessService.startSign(persons, taskId, isSequential = false)
+            signProcessService.startSign(persons, taskId, isSequential = true)
         }
 
         println("------------------主任务节点------------------------")
@@ -128,6 +125,7 @@ class BaseTest {
         for (task in tasks) {
             taskId = task.id
             println("task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}")
+            println("ids----------------- is : ${flowProcessService.getExecutionVariable(task.executionId, "${taskId}-subTasks")}")
             flowProcessService.complete(taskId)
         }
     }

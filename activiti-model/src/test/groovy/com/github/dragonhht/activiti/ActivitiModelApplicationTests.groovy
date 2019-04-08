@@ -97,9 +97,9 @@ class ActivitiModelApplicationTests {
         def tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
-            println "参数: value=${flowProcessService.getVariable(task.id, 'name')}"
+            println "参数: value=${flowProcessService.getTaskVariable(task.id, 'name')}"
             println "---"
-            flowProcessService.getVariables(task.id).each {keyx, value -> println "$keyx, $value"}
+            flowProcessService.getTaskVariables(task.id).each { keyx, value -> println "$keyx, $value"}
             flowProcessService.setAssign(task.id, 'haha')
             flowProcessService.complete(task.id)
         }
@@ -120,14 +120,14 @@ class ActivitiModelApplicationTests {
         tasks = flowProcessService.getTodoTasks('haha')
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
-            flowProcessService.getVariables(task.id).each {keyx, value -> println "$keyx, $value"}
+            flowProcessService.getTaskVariables(task.id).each { keyx, value -> println "$keyx, $value"}
             flowProcessService.complete(task.id)
         }
         println '------------第二个节点---------------------------'
         tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
-            flowProcessService.getVariables(task.id).each {keyx, value -> println "$keyx, $value"}
+            flowProcessService.getTaskVariables(task.id).each { keyx, value -> println "$keyx, $value"}
             flowProcessService.complete(task.id)
         }
 
@@ -135,7 +135,7 @@ class ActivitiModelApplicationTests {
         tasks = flowProcessService.getTodoTasks(userId)
         for (task in tasks) {
             println "task name is ${task.name}, id is ${task.id}, assignee is ${task.assignee}"
-            flowProcessService.getVariables(task.id).each {keyx, value -> println "$keyx, $value"}
+            flowProcessService.getTaskVariables(task.id).each { keyx, value -> println "$keyx, $value"}
             flowProcessService.complete(task.id)
         }
 

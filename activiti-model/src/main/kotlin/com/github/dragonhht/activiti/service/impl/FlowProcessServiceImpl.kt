@@ -1,7 +1,6 @@
 package com.github.dragonhht.activiti.service.impl
 
 import com.github.dragonhht.activiti.commands.FreeJumpCommand
-import com.github.dragonhht.activiti.commands.ResetTaskAssignee
 import com.github.dragonhht.activiti.commands.UpdateHiTaskReasonCommand
 
 import com.github.dragonhht.activiti.service.FlowProcessService
@@ -11,11 +10,9 @@ import org.activiti.engine.RepositoryService
 import org.activiti.engine.RuntimeService
 import org.activiti.engine.TaskService
 import org.activiti.engine.history.HistoricTaskInstance
-import org.activiti.engine.impl.persistence.entity.ExecutionEntity
 import org.activiti.engine.repository.Deployment
 import org.activiti.engine.runtime.ProcessInstance
 import org.activiti.engine.task.Task
-import org.apache.batik.svggen.font.table.Table.name
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
@@ -124,12 +121,20 @@ open class FlowProcessServiceImpl: FlowProcessService {
                 .list()
     }
 
-    override fun getVariable(taskId: String, key: String): Any {
+    override fun getTaskVariable(taskId: String, key: String): Any? {
         return taskService.getVariable(taskId, key)
     }
 
-    override fun getVariables(taskId: String): Map<String, Any> {
+    override fun getTaskVariables(taskId: String): Map<String, Any>? {
         return taskService.getVariables(taskId)
+    }
+
+    override fun getExecutionVariables(executionId: String): Map<String, Any>? {
+        return runtimeService.getVariables(executionId)
+    }
+
+    override fun getExecutionVariable(executionId: String, key: String): Any? {
+        return runtimeService.getVariable(executionId, key)
     }
 
     override fun setAssign(taskId: String, assignId: String) {
@@ -152,7 +157,7 @@ open class FlowProcessServiceImpl: FlowProcessService {
     private fun findMainTaskByTask(subTask: Task): Task {
         val parentInstanceIdKey = "parentProcessInstanceId"
         var task = subTask
-        val parentInstanceId = getVariable(subTask.id, parentInstanceIdKey)
+        val parentInstanceId = getTaskVariable(subTask.id, parentInstanceIdKey)
         if (parentInstanceId != null) {
             var parentId = parentInstanceId as String?
             do {
@@ -178,7 +183,7 @@ open class FlowProcessServiceImpl: FlowProcessService {
                     .processInstanceId(parentInstanceId)
                     .list()
             if (taskList != null && taskList.size > 0) {
-                parentId = getVariable(taskList[0].id, "parentProcessInstanceId") as String?
+                parentId = getTaskVariable(taskList[0].id, "parentProcessInstanceId") as String?
             }
         }
         return parentId
