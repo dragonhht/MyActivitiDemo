@@ -1,5 +1,6 @@
 package com.github.dragonhht.activiti.service
 
+import com.github.dragonhht.activiti.model.Node
 import org.activiti.engine.repository.Deployment
 import org.activiti.engine.runtime.ProcessInstance
 import org.activiti.engine.task.Task
@@ -13,39 +14,39 @@ import java.util.zip.ZipInputStream
  * @author: huang
  * @Date: 2019-3-28
  */
-interface FlowProcessService {
+interface FlowProcessService: BaseService {
 
     /**
      * 通过zip包部署流程资源
-     * @param input zip包的输入流
-     * @param name 流程名
+     * @param input: zip包的输入流
+     * @param name: 流程名
      * @return 部署实例
      */
     fun deployByZipInputStream(input: ZipInputStream, name: String): Deployment
 
     /**
      * 通过xml字符串部署流程资源.
-     * @param xml xml内容字符串
-     * @param name 流程名
-     * @param fileName bpmn文件名
+     * @param xml: xml内容字符串
+     * @param name: 流程名
+     * @param fileName: bpmn文件名
      * @return 部署实例
      */
     fun deployByXmlString(xml: String, name: String, fileName: String): Deployment
 
     /**
      * 通过bpmn文件输入流部署流程资源
-     * @param input bpmn文件输入流
-     * @param name 流程名
-     * @param fileName bpmn文件名
+     * @param input: bpmn文件输入流
+     * @param name: 流程名
+     * @param fileName: bpmn文件名
      * @return 部署实例
      */
     fun deployByBpmnInputStream(input: InputStream, name: String, fileName: String): Deployment
 
     /**
      * 部署ClassPath下的bpmn文件.
-     * @param filePath ClassPth下BPMN文件路径
-     * @param pngName ClassPath下png文件路径
-     * @param name 流程名
+     * @param filePath: ClassPth下BPMN文件路径
+     * @param pngName: ClassPath下png文件路径
+     * @param name: 流程名
      * @return 部署实例
      */
     fun deployByClassPathWithImg(filePath: String, pngPath: String, name: String): Deployment
@@ -53,7 +54,7 @@ interface FlowProcessService {
 
     /**
      * 通过部署Id删除部署.
-     * @param id 部署Id
+     * @param id: 部署Id
      */
     fun delDeployById(id: String)
 
@@ -63,100 +64,93 @@ interface FlowProcessService {
     fun getProcessInstanceById(id: String): ProcessInstance
 
     /**
-     * 通过流程实例id设置流程实例的active
-     * @param id 流程实例Id
-     * @param active active值
-     * @return 修改后流程实例的active
-     */
-    /*fun setActiveByProcessInstanceId(id: String, active: Boolean): Boolean*/
-
-    /**
      * 启动流程实例
-     * @param id 流程资源key
+     * @param id: 流程资源key
      * @return 流程实例
      */
     fun startProcess(key: String, variables: Map<String, Any> = mutableMapOf()): ProcessInstance
 
     /**
      * 完成任务.
-     * @param taskId 任务Id
+     * @param taskId: 任务Id
      */
     fun complete(taskId: String, variables: Map<String, Any> = mutableMapOf())
 
     /**
      * 获取待办数据
-     * @param useId 用户Id
+     * @param userId: 用户Id
      * @return 所有待办
      */
     fun getTodoTasks(userId: String): List<Task>
 
     /**
      * 获取任务参数.
-     * @param taskId 任务ID
-     * @param key 参数的键
+     * @param taskId: 任务ID
+     * @param key: 参数的键
      * @return 参数值
      */
     fun getTaskVariable(taskId: String, key: String): Any?
 
     /**
      * 获取Execution参数
-     * @param executionId Execution ID
+     * @param executionId: Execution ID
      * @return 任务的所有参数
      */
     fun getExecutionVariables(executionId: String): Map<String, Any>?
 
     /**
      * 获取Execution参数.
-     * @param executionId Execution ID
-     * @param key 参数的键
+     * @param executionId: Execution ID
+     * @param key: 参数的键
      * @return 参数值
      */
     fun getExecutionVariable(executionId: String, key: String): Any?
 
     /**
      * 获取任务参数
-     * @param taskId 任务ID
+     * @param taskId: 任务ID
      * @return 任务的所有参数
      */
     fun getTaskVariables(taskId: String): Map<String, Any>?
 
     /**
      * 设置签收人.
-     * @param taskId 任务Id
-     * @param assignId 签收人
+     * @param taskId: 任务Id
+     * @param assignId: 签收人
      */
     fun setAssign(taskId: String, assignId: String)
 
     /**
      * 跳转至指定节点(不会设置历史处理人).
-     * @param taskId 当前任务ID
-     * @param nodeId 跳转到的节点Id
+     * @param taskId: 当前任务ID
+     * @param nodeId: 跳转到的节点Id
      */
     fun jumpToNode(taskId: String, nodeId: String, variables: Map<String, Any> = mutableMapOf())
 
     /**
      * 跳转至指定节点(已经处理的节点会将历史处理人设置为处理人)
-     * @param task 任务
-     * @param nodeId 跳转到的节点Id
+     * @param task: 任务
+     * @param nodeId: 跳转到的节点Id
      */
     fun jumpToNode(task: Task, nodeId: String, variables: Map<String, Any> = mutableMapOf())
 
     /**
      * 跳转任意节点后将处理人设置为历史处理人.
-     * @param processInstanceId 流程实例id
-     * @param definitionKey 流程定义key
+     * @param processInstanceId: 流程实例id
+     * @param definitionKey: 流程定义key
      */
     fun setBackTaskDealer(processInstanceId: String, definitionKey: String)
 
     /**
      * 将流程挂起.
-     * @param id 流程实例Id
+     * @param id: 流程实例Id
      */
     fun suspendProcessInstanceById(id: String)
 
     /**
      * 将流程激活.
-     * @param id 流程实例Id
+     * @param id: 流程实例Id
      */
     fun activeProcessInstanceById(id: String)
+
 }

@@ -1,5 +1,6 @@
 package com.github.dragonhht.activiti.service
 
+import com.github.dragonhht.activiti.model.Node
 import org.activiti.engine.impl.persistence.entity.SuspensionState
 import org.activiti.engine.repository.ProcessDefinition
 import org.activiti.engine.task.Task
@@ -23,7 +24,7 @@ interface BaseService {
 
     /**
      * 通过流程定义Id获取流程定义
-     * @param taskId id
+     * @param id id
      * @return 流程定义
      */
     @Throws(Exception::class)
@@ -52,4 +53,20 @@ interface BaseService {
      */
     @Throws(Exception::class)
     fun getTaskSuspensionState(taskId: String): Boolean
+
+    /**
+     * 根据流程定义id获取流程定义的用户任务节点信息
+     * @param id 流程定义id
+     * @return 流程定义用户任务节点信息
+     */
+    @Throws(Exception::class)
+    fun getProcessDefinitionTaskNodeInfo(id: String): List<Node>
+
+    /**
+     * 根据流程定义id获取流程定义的所有节点信息
+     * @param id 流程定义id
+     * @return 流程定义所有节点信息
+     */
+    @Throws(Exception::class)
+    fun getProcessDefinitionAllNodeInfo(id: String): List<Node>
 }

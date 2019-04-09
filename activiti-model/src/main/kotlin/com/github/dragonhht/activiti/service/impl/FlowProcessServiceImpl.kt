@@ -2,11 +2,13 @@ package com.github.dragonhht.activiti.service.impl
 
 import com.github.dragonhht.activiti.commands.FreeJumpCommand
 import com.github.dragonhht.activiti.commands.UpdateHiTaskReasonCommand
+import com.github.dragonhht.activiti.model.Node
 import com.github.dragonhht.activiti.params.DeleteReasons
 import com.github.dragonhht.activiti.params.SubTaskVariableKeys
 import com.github.dragonhht.activiti.service.FlowProcessService
 import org.activiti.engine.*
 import org.activiti.engine.history.HistoricTaskInstance
+import org.activiti.engine.impl.persistence.entity.HistoricProcessInstanceEntity
 import org.activiti.engine.repository.Deployment
 import org.activiti.engine.runtime.ProcessInstance
 import org.activiti.engine.task.Task
@@ -24,7 +26,7 @@ import javax.annotation.Resource
  * @Date: 2019-3-28
  */
 @Service("flowProcessService")
-open class FlowProcessServiceImpl: FlowProcessService {
+open class FlowProcessServiceImpl: FlowProcessService, BaseServiceImpl() {
 
     @Resource
     private lateinit var repositoryService: RepositoryService
@@ -91,14 +93,6 @@ open class FlowProcessServiceImpl: FlowProcessService {
                 .processInstanceId(id)
                 .singleResult()
     }
-
-    /*override fun setActiveByProcessInstanceId(id: String, active: Boolean): Boolean {
-        val executionEntity = runtimeService.createExecutionQuery()
-                .executionId(id)
-                .singleResult() as ExecutionEntity
-        executionEntity.isActive = active
-        return executionEntity.isActive
-    }*/
 
     override fun startProcess(key: String, variables: Map<String, Any>): ProcessInstance {
         return runtimeService.startProcessInstanceByKey(key, variables)

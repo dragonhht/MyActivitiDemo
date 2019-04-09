@@ -1,4 +1,5 @@
 import com.github.dragonhht.activiti.ActivitiModelApplication
+import com.github.dragonhht.activiti.service.BaseService
 import com.github.dragonhht.activiti.service.FlowProcessService
 import com.github.dragonhht.activiti.service.SignProcessService
 import org.activiti.engine.RepositoryService
@@ -32,6 +33,8 @@ class BaseTest {
     private lateinit var runTimeService: RuntimeService
     @Autowired
     private lateinit var taskService: TaskService
+    @Autowired
+    private lateinit var baseService: BaseService
 
     @Before
     fun init() {
@@ -163,8 +166,8 @@ class BaseTest {
             println("task id is ${it.id}, name is ${it.name}")
             val persons = listOf(userId, userId)
             if (index == 0) {
-                signProcessService.startSign(persons, it.id)
-                flowProcessService.jumpToNode(it.id, "_22")
+                signProcessService.startSign(persons, it.id, isSequential = true)
+                //flowProcessService.jumpToNode(it.id, "_22")
             }
             index++
             //flowProcessService.complete(it.id)
@@ -207,6 +210,22 @@ class BaseTest {
 
         flowProcessService.delDeployById(deployment.id)
         println("-----------------删除部署---------------------------")
+    }
+
+    @Test
+    fun testNode() {
+        val filePath = "test/parallel.bpmn"
+        val processKey = "parallel"
+        val userId = "user"
+        val deployment = flowProcessService.deployByClassPath(filePath, "parallel")
+        assertNotNull(deployment)
+        val instance = flowProcessService.startProcess(processKey)
+        assertNotNull(instance)
+
+        var tasks = flowProcessService.getTodoTasks(userId)
+        tasks?.forEach {
+            flowProcessService.getHandledTaskNodeInfo(it.processInstanceId)
+        }
     }
 
 }

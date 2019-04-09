@@ -5,7 +5,6 @@ import com.github.dragonhht.activiti.params.SystemProcessKeys
 import com.github.dragonhht.activiti.service.BaseService
 import com.github.dragonhht.activiti.service.SignProcessService
 import com.github.dragonhht.activiti.utils.IDGenerator
-import groovy.util.logging.Slf4j
 import org.activiti.engine.RuntimeService
 import org.activiti.engine.TaskService
 import org.activiti.engine.impl.persistence.entity.SuspensionState
@@ -20,7 +19,6 @@ import javax.annotation.Resource
  * @author: huang
  * @Date: 2019-4-2
  */
-@Slf4j
 @Service
 open class SignProcessServiceImpl: SignProcessService {
 
@@ -34,40 +32,28 @@ open class SignProcessServiceImpl: SignProcessService {
     override fun startSign(assignees: List<String>, taskId: String,
                            isSequential: Boolean, variables: MutableMap<String, Any>) {
         val task = baseService.findTaskById(taskId) as TaskEntity
-        val processInstance = runtimeService.createProcessInstanceQuery()
-                .processInstanceId(task.processInstanceId)
-                .singleResult()
-        if (variables != null) {
-            variables["sign-isSequential-flag"] = isSequential
-        }
+        // 设置会签子任务参数
         variables[SubTaskVariableKeys.SIGN_PERSONS] = assignees
         variables[SubTaskVariableKeys.PARENT_PROCESS_INSTANCE_ID] = task.processInstanceId
         variables[SubTaskVariableKeys.PARENT_TASK_ID] = taskId
+        // 是否串行
+        var processKey = SystemProcessKeys.SIGN_NOT_SEQUENTIAL
+        if (isSequential) {
+            processKey = SystemProcessKeys.SIGN_SEQUENTIAL
+        }
 
-        if(isSequential) {
-            val signProcessInstance = runtimeService
-                    .startProcessInstanceByKey(SystemProcessKeys.SIGN_SEQUENTIAL, variables)
+        val signProcessInstance = runtimeService
+                .startProcessInstanceByKey(processKey, variables)
 
-            setSubInstanceId(task.executionId, signProcessInstance.id)
-
-            val signTask = taskService.createTaskQuery()
-                    .processInstanceId(signProcessInstance.id)
-                    .singleResult()
+        setSubInstanceId(task.executionId, signProcessInstance.id)
+        val signTasks = taskService.createTaskQuery()
+                .processInstanceId(signProcessInstance.id)
+                .list()
+        for (signTask in signTasks) {
             signTask.parentTaskId = taskId
             taskService.saveTask(signTask)
-        } else {
-            val signProcessInstance = runtimeService
-                    .startProcessInstanceByKey(SystemProcessKeys.SIGN_NOT_SEQUENTIAL, variables)
-
-            setSubInstanceId(task.executionId, signProcessInstance.id)
-            val signTasks = taskService.createTaskQuery()
-                    .processInstanceId(signProcessInstance.id)
-                    .list()
-            for (signTask in signTasks) {
-                signTask.parentTaskId = taskId
-                taskService.saveTask(signTask)
-            }
         }
+
         // 将任务挂起
         baseService.setTaskSuspensionState(task, SuspensionState.SUSPENDED)
     }
