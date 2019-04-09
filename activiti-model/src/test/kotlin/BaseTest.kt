@@ -221,11 +221,6 @@ class BaseTest {
         assertNotNull(deployment)
         val instance = flowProcessService.startProcess(processKey)
         assertNotNull(instance)
-
-        var tasks = flowProcessService.getTodoTasks(userId)
-        tasks?.forEach {
-            flowProcessService.getHandledTaskNodeInfo(it.processInstanceId)
-        }
     }
 
 }
