@@ -1,7 +1,7 @@
 package com.github.dragonhht.activiti.params
 
 /**
- * .
+ * 内置流程key.
  *
  * @author: huang
  * @Date: 2019-4-7

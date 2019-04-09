@@ -142,13 +142,6 @@ interface FlowProcessService {
     fun jumpToNode(task: Task, nodeId: String, variables: Map<String, Any> = mutableMapOf())
 
     /**
-     * 跳转至指定节点(只能跳转主流程节点，已经处理的节点会将历史处理人设置为处理人)
-     * @param task 任务
-     * @param nodeId 跳转到的节点Id
-     */
-    fun jumpToMainNode(task: Task, nodeId: String, variables: Map<String, Any> = mutableMapOf())
-
-    /**
      * 跳转任意节点后将处理人设置为历史处理人.
      * @param processInstanceId 流程实例id
      * @param definitionKey 流程定义key

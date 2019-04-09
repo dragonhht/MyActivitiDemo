@@ -1,5 +1,6 @@
 package com.github.dragonhht.activiti.service
 
+import org.activiti.engine.impl.persistence.entity.SuspensionState
 import org.activiti.engine.repository.ProcessDefinition
 import org.activiti.engine.task.Task
 
@@ -27,4 +28,28 @@ interface BaseService {
      */
     @Throws(Exception::class)
     fun findProcessDefinitionById(id: String): ProcessDefinition
+
+    /**
+     * 设置任务挂起状态.
+     * @param taskId 任务Id
+     * @param state 状态
+     */
+    @Throws(Exception::class)
+    fun setTaskSuspensionState(taskId: String, state: SuspensionState)
+
+    /**
+     * 设置任务挂起状态.
+     * @param taskId 任务
+     * @param state 状态
+     */
+    @Throws(Exception::class)
+    fun setTaskSuspensionState(task: Task, state: SuspensionState)
+
+    /**
+     * 获取任务挂起状态.
+     * @param taskId 任务id
+     * @return true为挂起，false为非挂起状态
+     */
+    @Throws(Exception::class)
+    fun getTaskSuspensionState(taskId: String): Boolean
 }

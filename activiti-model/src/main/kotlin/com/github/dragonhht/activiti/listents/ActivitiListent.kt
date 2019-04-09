@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component
 open class ActivitiListent: ActivitiEventListener {
 
     override fun onEvent(activitiEvent: ActivitiEvent) {
+        // TODO 全局监听
         if (ActivitiEventType.TASK_COMPLETED == activitiEvent.type) {
             println("ActivitiEventListener: ${activitiEvent.type}")
         }

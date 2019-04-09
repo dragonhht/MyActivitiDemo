@@ -15,6 +15,7 @@ interface SignProcessService {
      * @param isSequential 是否串行
      * @param variables 参数
      */
-    fun startSign(assignees: List<String>, taskId: String, isSequential: Boolean = false, variables: MutableMap<String, Any> = mutableMapOf())
+    fun startSign(assignees: List<String>, taskId: String,
+                  isSequential: Boolean = false, variables: MutableMap<String, Any> = mutableMapOf())
 
 }

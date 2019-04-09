@@ -2,13 +2,10 @@ package com.github.dragonhht.activiti.service.impl
 
 import com.github.dragonhht.activiti.commands.FreeJumpCommand
 import com.github.dragonhht.activiti.commands.UpdateHiTaskReasonCommand
-
+import com.github.dragonhht.activiti.params.DeleteReasons
+import com.github.dragonhht.activiti.params.SubTaskVariableKeys
 import com.github.dragonhht.activiti.service.FlowProcessService
-import org.activiti.engine.HistoryService
-import org.activiti.engine.ManagementService
-import org.activiti.engine.RepositoryService
-import org.activiti.engine.RuntimeService
-import org.activiti.engine.TaskService
+import org.activiti.engine.*
 import org.activiti.engine.history.HistoricTaskInstance
 import org.activiti.engine.repository.Deployment
 import org.activiti.engine.runtime.ProcessInstance
@@ -17,9 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import java.io.InputStream
-
-import javax.annotation.Resource
 import java.util.zip.ZipInputStream
+import javax.annotation.Resource
 
 /**
  * .
@@ -110,7 +106,7 @@ open class FlowProcessServiceImpl: FlowProcessService {
 
     override fun complete(taskId: String, variables: Map<String, Any>) {
         taskService.complete(taskId, variables)
-        managementService.executeCommand(UpdateHiTaskReasonCommand(taskId, "completed"))
+        managementService.executeCommand(UpdateHiTaskReasonCommand(taskId, DeleteReasons.COMPLETE))
         //managementService.executeCommand(ResetTaskAssignee(taskId))
     }
 
@@ -150,50 +146,11 @@ open class FlowProcessServiceImpl: FlowProcessService {
         setBackTaskDealer(task.processInstanceId, nodeId)
     }
 
-    override fun jumpToMainNode(task: Task, nodeId: String, variables: Map<String, Any>) {
-
-    }
-
-    private fun findMainTaskByTask(subTask: Task): Task {
-        val parentInstanceIdKey = "parentProcessInstanceId"
-        var task = subTask
-        val parentInstanceId = getTaskVariable(subTask.id, parentInstanceIdKey)
-        if (parentInstanceId != null) {
-            var parentId = parentInstanceId as String?
-            do {
-                parentId = getTaskParentInstanceId(parentId)
-            } while (parentId != null)
-        }
-        return task
-    }
-
-    /**
-     * 通过父流程ID获取父流程参数中的父流程Id
-     */
-    private fun getTaskParentInstanceId(parentInstanceId: String?): String? {
-        if (parentInstanceId == null) {
-            return null
-        }
-        var parentId: String?  = null
-        val instance = runtimeService.createProcessInstanceQuery()
-                .processInstanceId(parentInstanceId)
-                .singleResult()
-        if (instance != null) {
-            val taskList = taskService.createTaskQuery()
-                    .processInstanceId(parentInstanceId)
-                    .list()
-            if (taskList != null && taskList.size > 0) {
-                parentId = getTaskVariable(taskList[0].id, "parentProcessInstanceId") as String?
-            }
-        }
-        return parentId
-    }
-
     override fun setBackTaskDealer(processInstanceId: String, definitionKey: String) {
         val list = historyService.createHistoricTaskInstanceQuery()
                 .processInstanceId(processInstanceId)
                 .taskDefinitionKey(definitionKey)
-                .taskDeleteReason("completed")
+                .taskDeleteReason(DeleteReasons.COMPLETE)
                 .orderByTaskCreateTime().desc()
                 .list()
         var historicTask: HistoricTaskInstance

@@ -26,7 +26,8 @@ class MyLocaleResolver: LocaleResolver {
         return locale
     }
 
-    override fun setLocale(httpServletRequest: HttpServletRequest, @Nullable httpServletResponse: HttpServletResponse, @Nullable locale: Locale) {
+    override fun setLocale(httpServletRequest: HttpServletRequest,
+                           @Nullable httpServletResponse: HttpServletResponse, @Nullable locale: Locale) {
 
     }
 }

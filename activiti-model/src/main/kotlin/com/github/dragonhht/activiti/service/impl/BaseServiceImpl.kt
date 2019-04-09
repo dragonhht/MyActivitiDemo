@@ -4,6 +4,8 @@ import com.github.dragonhht.activiti.service.BaseService
 import org.activiti.engine.RepositoryService
 import org.activiti.engine.TaskService
 import org.activiti.engine.impl.RepositoryServiceImpl
+import org.activiti.engine.impl.persistence.entity.SuspensionState
+import org.activiti.engine.impl.persistence.entity.TaskEntity
 import org.activiti.engine.repository.ProcessDefinition
 import org.activiti.engine.task.Task
 import org.springframework.stereotype.Service
@@ -16,7 +18,7 @@ import javax.annotation.Resource
  * @author: huang
  * @Date: 2019-4-2
  */
-@Service
+@Service("activitiBaseService")
 open class BaseServiceImpl: BaseService {
 
     @Resource
@@ -35,5 +37,22 @@ open class BaseServiceImpl: BaseService {
     override fun findProcessDefinitionById(id: String): ProcessDefinition {
         return (repositoryService as RepositoryServiceImpl)
                 .getDeployedProcessDefinition(id) ?: throw RuntimeException("流程定义未找到!")
+    }
+
+    override fun setTaskSuspensionState(taskId: String, state: SuspensionState) {
+        var task = findTaskById(taskId) as TaskEntity
+        task.suspensionState = state.stateCode
+        taskService.saveTask(task)
+    }
+
+    override fun setTaskSuspensionState(task: Task, state: SuspensionState) {
+        var task = task as TaskEntity
+        task.suspensionState = state.stateCode
+        taskService.saveTask(task)
+    }
+
+    override fun getTaskSuspensionState(taskId: String): Boolean {
+        var task = findTaskById(taskId)
+        return task.isSuspended
     }
 }

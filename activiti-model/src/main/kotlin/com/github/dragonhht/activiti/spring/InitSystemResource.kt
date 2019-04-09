@@ -17,7 +17,8 @@ class InitSystemResource: ApplicationListener<ContextRefreshedEvent> {
 
     override fun onApplicationEvent(contextRefreshedEvent: ContextRefreshedEvent) {
         log.info("加载Activiti系统流程资源....")
-        val flowProcessService = contextRefreshedEvent.applicationContext.getBean("flowProcessService") as FlowProcessService
+        val flowProcessService = contextRefreshedEvent.applicationContext
+                .getBean("flowProcessService") as FlowProcessService
         // 会签串行
         flowProcessService.deployByClassPath("processes/system/sign_sequential.bpmn", "sign_sequential")
         // 会签并行

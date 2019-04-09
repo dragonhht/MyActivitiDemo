@@ -132,8 +132,81 @@ class BaseTest {
 
     @Test
     fun test() {
-        val ss = null as String?
-        println(ss)
+        val ss = null as MutableList<String>?
+        ss?.forEach { println(it) }
+    }
+
+    @Test
+    fun testParallel() {
+        val filePath = "test/parallel.bpmn"
+        val processKey = "parallel"
+        val userId = "user"
+        val deployment = flowProcessService.deployByClassPath(filePath, "parallel")
+        assertNotNull(deployment)
+        println("deployment id is ${deployment.id}, name is ${deployment.name}, key is ${deployment.key}")
+
+        val instance = flowProcessService.startProcess(processKey)
+        assertNotNull(instance)
+        println("processInstance id is ${instance.id}, name is ${instance.name}")
+
+        println("---------------------------------------第一次获取任务------------------------------------")
+        var tasks = flowProcessService.getTodoTasks(userId)
+        tasks?.forEach {
+            println("task id is ${it.id}, name is ${it.name}")
+            flowProcessService.complete(it.id)
+        }
+
+        println("---------------------------------------第二次获取任务------------------------------------")
+        tasks = flowProcessService.getTodoTasks(userId)
+        var index = 0
+        tasks?.forEach {
+            println("task id is ${it.id}, name is ${it.name}")
+            val persons = listOf(userId, userId)
+            if (index == 0) {
+                signProcessService.startSign(persons, it.id)
+                flowProcessService.jumpToNode(it.id, "_22")
+            }
+            index++
+            //flowProcessService.complete(it.id)
+        }
+
+        println("---------------------------------------第三次获取任务------------------------------------")
+        tasks = flowProcessService.getTodoTasks(userId)
+        tasks?.forEach {
+            println("task id is ${it.id}, name is ${it.name}")
+            flowProcessService.complete(it.id)
+        }
+
+        println("---------------------------------------第四次获取任务------------------------------------")
+        tasks = flowProcessService.getTodoTasks(userId)
+        tasks?.forEach {
+            println("task id is ${it.id}, name is ${it.name}")
+            flowProcessService.complete(it.id)
+        }
+
+        println("---------------------------------------第五次获取任务------------------------------------")
+        tasks = flowProcessService.getTodoTasks(userId)
+        tasks?.forEach {
+            println("task id is ${it.id}, name is ${it.name}")
+            flowProcessService.complete(it.id)
+        }
+
+        println("---------------------------------------第六次获取任务------------------------------------")
+        tasks = flowProcessService.getTodoTasks(userId)
+        tasks?.forEach {
+            println("task id is ${it.id}, name is ${it.name}")
+            flowProcessService.complete(it.id)
+        }
+
+        println("---------------------------------------第七次获取任务------------------------------------")
+        tasks = flowProcessService.getTodoTasks(userId)
+        tasks?.forEach {
+            println("task id is ${it.id}, name is ${it.name}")
+            flowProcessService.complete(it.id)
+        }
+
+        flowProcessService.delDeployById(deployment.id)
+        println("-----------------删除部署---------------------------")
     }
 
 }
