@@ -14,7 +14,7 @@ import java.util.zip.ZipInputStream
  * @author: huang
  * @Date: 2019-3-28
  */
-interface FlowProcessService: BaseService {
+interface FlowProcessService {
 
     /**
      * 通过zip包部署流程资源

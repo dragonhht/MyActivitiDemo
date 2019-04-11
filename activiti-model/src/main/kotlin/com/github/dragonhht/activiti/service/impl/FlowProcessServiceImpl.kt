@@ -26,7 +26,7 @@ import javax.annotation.Resource
  * @Date: 2019-3-28
  */
 @Service("flowProcessService")
-open class FlowProcessServiceImpl: FlowProcessService, BaseServiceImpl() {
+open class FlowProcessServiceImpl: FlowProcessService {
 
     @Resource
     private lateinit var repositoryService: RepositoryService
